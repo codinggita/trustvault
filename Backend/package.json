@@ -12,6 +12,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",
     "experss": "^0.0.1-security",
     "express": "^5.2.1",
