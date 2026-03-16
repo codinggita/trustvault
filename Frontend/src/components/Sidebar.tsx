@@ -40,17 +40,17 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-6 space-y-1"
         >
-          <NavLink
-            to="/dashboard"
-            end
-            className={({ isActive, isPending }) => `
-              flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-              ${isActive
-                ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-              }
-            `}
-          >
+           <NavLink
+             to="/dashboard"
+             end
+             className={({ isActive }) => `
+               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
+               ${isActive
+                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
+                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
+               }
+             `}
+           >
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -63,17 +63,17 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
             Dashboard
           </NavLink>
           
-          <NavLink
-            to="/accounts"
-            end
-            className={({ isActive, isPending }) => `
-              flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-              ${isActive
-                ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-              }
-            `}
-          >
+           <NavLink
+             to="/accounts"
+             end
+             className={({ isActive }) => `
+               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
+               ${isActive
+                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
+                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
+               }
+             `}
+           >
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -86,17 +86,17 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
             Accounts
           </NavLink>
           
-          <NavLink
-            to="/transactions"
-            end
-            className={({ isActive, isPending }) => `
-              flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-              ${isActive
-                ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-              }
-            `}
-          >
+           <NavLink
+             to="/transactions"
+             end
+             className={({ isActive }) => `
+               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
+               ${isActive
+                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
+                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
+               }
+             `}
+           >
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -109,17 +109,17 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
             Transactions
           </NavLink>
           
-          <NavLink
-            to="/transfers"
-            end
-            className={({ isActive, isPending }) => `
-              flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-              ${isActive
-                ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-              }
-            `}
-          >
+           <NavLink
+             to="/transfers"
+             end
+             className={({ isActive }) => `
+               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
+               ${isActive
+                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
+                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
+               }
+             `}
+           >
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { SkeletonLoader } from './SkeletonLoader';
 
 interface CardProps extends PropsWithChildren {
@@ -33,16 +33,16 @@ export const Card = ({
           />
         ) : null}
         <div className="space-y-4">
-          {Array.isArray(children) && skeletonConfig.body ? (
-            children.map((child, index) => (
-              <SkeletonLoader 
-                key={index} 
-                className="mb-2" 
-                width="100%" 
-                height="1rem"
-              />
-            ))
-          ) : (
+         {Array.isArray(children) && skeletonConfig.body ? (
+             children.map((_, index) => (
+               <SkeletonLoader 
+                 key={index} 
+                 className="mb-2" 
+                 width="100%" 
+                 height="1rem"
+               />
+             ))
+           ) : (
             skeletonConfig.body && !Array.isArray(children) ? (
               <SkeletonLoader 
                 className="mb-2" 

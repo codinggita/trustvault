@@ -6,9 +6,16 @@ import { Modal } from '../components/Modal';
 import { useAuthStore } from '../store/useAuthStore';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
+import api from '../utils/api';
 
 export const Accounts = () => {
-  const [accounts, setAccounts] = useState([]);
+   const [accounts, setAccounts] = useState<Array<{
+     id: string;
+     name: string;
+     type: 'checking' | 'savings' | 'credit';
+     balance: number;
+     status: string;
+   }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -91,7 +98,7 @@ export const Accounts = () => {
         status: 'ACTIVE'
       };
       
-      setAccounts(prev => [...prev, newAccount]);
+       setAccounts(prev => [...prev, newAccount as typeof prev[number]>);
       setShowCreateModal(false);
       setCreateAccountData({
         name: '',
