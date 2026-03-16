@@ -1,17 +1,20 @@
-import { Box, Button, Typography, TextField, Link, Stack } from '@mui/material';
+import { Box, Button, Typography, TextField, Link, Stack, CircularProgress } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login, register, clearError } from '../../store/authSlice';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
 import Logo from './Logo';
 import ErrorToast from './ErrorToast';
 
 const AuthForm = ({ type }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const formRef = useRef(null);
 
   // Form validation schema based on type (login or register)
   const validationSchema = yup.object().shape({
@@ -45,13 +48,98 @@ const AuthForm = ({ type }) => {
     };
   }, [dispatch]);
 
-  const onSubmit = async (data) => {
+  useGSAP(() => {
+    // Form entrance animation
+    gsap.fromTo(
+      formRef.current,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+    );
+    
+    // Input field animations on focus/blur
+    const inputs = formRef.current.querySelectorAll('input');
+    inputs.forEach(input => {
+      gsap.fromTo(
+        input,
+          { scale: 0.95, opacity: 0 },
+        { 
+          scale: 1, 
+          opacity: 1, 
+          duration: 0.3, 
+          ease: 'power2.out',
+          paused: true
+        }
+      ).progress(0.5); // Start at midpoint
+      
+      input.addEventListener('focus', () => {
+        gsap.to(input, { scale: 1.05, duration: 0.2, ease: 'power2.out' });
+      });
+      
+      input.addEventListener('blur', () => {
+        gsap.to(input, { scale: 1, duration: 0.2, ease: 'power2.out' });
+      });
+    });
+    
+    // Button hover animation
+    const submitButton = formRef.current.querySelector('button[type="submit"]');
+    if (submitButton) {
+      gsap.fromTo(
+        submitButton,
+          { scale: 1 },
+        { 
+          scale: 1.05, 
+          duration: 0.3, 
+          ease: 'power2.out',
+          paused: true
+        }
+      ).progress(0.5);
+      
+      submitButton.addEventListener('mouseenter', () => {
+        gsap.to(submitButton, { scale: 1.08, duration: 0.2, ease: 'power2.out' });
+      });
+      
+      submitButton.addEventListener('mouseleave', () => {
+        gsap.to(submitButton, { scale: 1, duration: 0.2, ease: 'power2.out' });
+      });
+    }
+    
+    // Error shake animation
+    const errorElements = formRef.current.querySelectorAll('.Mui-error');
+    errorElements.forEach(error => {
+      gsap.fromTo(
+        error,
+          { x: 0 },
+        { 
+          x: [{ value: -8 }, { value: 8 }, { value: -8 }, { value: 8 }, { value: 0 }],
+          duration: 0.4,
+          ease: 'power2.out',
+          paused: true
+        }
+      ).progress(0.5);
+      
+      // Trigger shake when error appears
+      const observer = new MutationObserver(() => {
+        if (error.offsetParent !== null) { // Element is visible
+          gsap.to(error, { 
+            x: [{ value: -8 }, { value: 8 }, { value: -8 }, { value: 8 }, { value: 0 }],
+            duration: 0.4,
+            ease: 'power2.out'
+          });
+        }
+      });
+      
+      observer.observe(error, { attributes: true, childList: true, subtree: true });
+    });
+  }, { scope: formRef });
+
+    const onSubmit = async (data) => {
     if (type === 'login') {
       dispatch(login({ email: data.email, password: data.password }));
     } else if (type === 'register') {
-      // Remove confirmPassword from data before sending to backend
-      const { confirmPassword, ...registrationData } = data;
-      dispatch(register(registrationData));
+      // Remove confirmPassword and combine firstName/lastName into name for backend
+      const { confirmPassword, firstName, lastName, ...registrationData } = data;
+      const name = `${firstName} ${lastName}`.trim();
+      dispatch(register({ ...registrationData, email: data.email, password: data.password, name }));
     }
   };
 
@@ -63,10 +151,16 @@ const AuthForm = ({ type }) => {
   }, [isSubmitSuccessful, navigate]);
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
-      <Stack spacing={2}>
+    <Box 
+      ref={formRef}
+      component="form" 
+      onSubmit={handleSubmit(onSubmit)} 
+      noValidate 
+      sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}
+    >
+      <Stack spacing={3}>
         <Logo />
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" fontWeight="600" align="center" component="h2">
           {type === 'login' ? 'Sign In to TrustVault' : 'Create Account'}
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center">
@@ -82,6 +176,8 @@ const AuthForm = ({ type }) => {
           error={!!errors.email}
           helperText={errors.email ? errors.email.message : ''}
           autoComplete="email"
+          sx={{ mt: 1 }}
+          className="animate-item"
         />
 
         <TextField
@@ -93,6 +189,8 @@ const AuthForm = ({ type }) => {
           error={!!errors.password}
           helperText={errors.password ? errors.password.message : ''}
           autoComplete="current-password"
+          sx={{ mt: 1 }}
+          className="animate-item"
         />
 
         {type === 'register' && (
@@ -105,6 +203,8 @@ const AuthForm = ({ type }) => {
               error={!!errors.firstName}
               helperText={errors.firstName ? errors.firstName.message : ''}
               autoComplete="given-name"
+              sx={{ mt: 1 }}
+              className="animate-item"
             />
             <TextField
               label="Last Name"
@@ -114,6 +214,8 @@ const AuthForm = ({ type }) => {
               error={!!errors.lastName}
               helperText={errors.lastName ? errors.lastName.message : ''}
               autoComplete="family-name"
+              sx={{ mt: 1 }}
+              className="animate-item"
             />
             <TextField
               label="Confirm Password"
@@ -124,6 +226,8 @@ const AuthForm = ({ type }) => {
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword ? errors.confirmPassword.message : ''}
               autoComplete="new-password"
+              sx={{ mt: 1 }}
+              className="animate-item"
             />
           </>
         )}
@@ -133,13 +237,14 @@ const AuthForm = ({ type }) => {
           variant="contained"
           color="primary"
           fullWidth
-          sx={{ mt: 3, disabled: { opacity: 0.8 } }}
+          sx={{ mt: 4, disabled: { opacity: 0.8 }, '&:hover': { transform: 'scale(1.05)' } }}
           disabled={isSubmitSuccessful}
+          className="animate-item"
         >
           {type === 'login' ? 'Sign In' : 'Create Account'}
         </Button>
 
-        <Stack direction="row" justifyContent="center" mt={2} sx={{ flexWrap: 'wrap' }}>
+        <Stack direction="row" justifyContent="center" mt={3} sx={{ flexWrap: 'wrap' }}>
           {type === 'login' && (
             <>
               <Link

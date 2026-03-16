@@ -22,7 +22,8 @@ const ProtectedRoute = () => {
 
   // If not authenticated, redirect to login
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: window.location }} />;
+    const { pathname, search, hash } = window.location;
+    return <Navigate to="/login" replace state={{ from: pathname + search + hash }} />;
   }
 
   // If authenticated, render the protected routes

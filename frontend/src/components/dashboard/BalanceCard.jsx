@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useSelector } from 'react-redux';
-import { useAuthSelector } from '../../store/store';
 
 const BalanceCard = ({ account }) => {
-  const { user } = useAuthSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,12 +56,50 @@ const BalanceCard = ({ account }) => {
     }
   }, [balance]);
 
+  // Add hover animation
+  useEffect(() => {
+    const cardElement = document.querySelector(`.balance-card-${account.id}`);
+    if (cardElement) {
+      cardElement.addEventListener('mouseenter', () => {
+        gsap.to(cardElement, {
+          scale: 1.02,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+      
+      cardElement.addEventListener('mouseleave', () => {
+        gsap.to(cardElement, {
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.in'
+        });
+      });
+      
+      return () => {
+        cardElement.removeEventListener('mouseenter', () => {});
+        cardElement.removeEventListener('mouseleave', () => {});
+      };
+    }
+  }, [account.id]);
+
   if (loading) {
     return (
-      <Card sx={{ minHeight: 180 }}>
+      <Card 
+        className="balance-card"
+        sx={{ 
+          minHeight: 180, 
+          position: 'relative', 
+          overflow: 'hidden',
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          borderRadius: 16
+        }}
+      >
         <CardContent>
           <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-            <CircularProgress size={24} />
+            <CircularProgress size={24} sx={{ color: '#60a5fa' }} />
           </Box>
         </CardContent>
       </Card>
@@ -71,7 +108,18 @@ const BalanceCard = ({ account }) => {
 
   if (error) {
     return (
-      <Card sx={{ minHeight: 180 }}>
+      <Card 
+        className="balance-card"
+        sx={{ 
+          minHeight: 180, 
+          position: 'relative', 
+          overflow: 'hidden',
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          borderRadius: 16
+        }}
+      >
         <CardContent>
           <Typography color="error.text" textAlign="center">
             {error}
@@ -82,7 +130,25 @@ const BalanceCard = ({ account }) => {
   }
 
   return (
-    <Card sx={{ minHeight: 180, position: 'relative', overflow: 'hidden' }}>
+    <Card 
+      className={`balance-card-${account.id} balance-card`}
+      sx={{ 
+        minHeight: 180, 
+        position: 'relative', 
+        overflow: 'hidden',
+        backgroundColor: 'rgba(30, 41, 59, 0.4)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        borderRadius: 16,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+          transform: 'translateY(-2px)'
+        }
+      }}
+    >
       {/* Decorative gradient overlay */}
       <Box 
         position="absolute" 
@@ -90,32 +156,40 @@ const BalanceCard = ({ account }) => {
         left={0} 
         width="100%" 
         height="4px" 
-        background="linear-gradient(90deg, #2563eb, #10b981)"
+        background="linear-gradient(90deg, #60a5fa, #34d399)"
       />
       
       <CardContent sx={{ py: 3 }}>
         <Stack spacing={2}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" fontWeight="600">
+            <Typography variant="h6" fontWeight="600" sx={{ color: '#f8fafc' }}>
               {account.name || `Account ${account.id}`}
             </Typography>
             <Chip 
               label={account.type || 'Checking'} 
               size="small" 
-              sx={{ backgroundColor: '#2563eb20', color: '#2563eb' }}
+              sx={{ 
+                backgroundColor: 'rgba(96, 165, 250, 0.2)', 
+                color: '#60a5fa',
+                border: '1px solid rgba(96, 165, 250, 0.3)'
+              }}
             />
           </Box>
           
           <Box display="flex" justifyContent="space-between" alignItems="baseline">
             <Typography 
-              variant="h4" 
+              variant="h3" 
               fontWeight="700" 
               className={`balance-amount-${account.id}`}
-              sx={{ color: balance >= 0 ? 'success.main' : 'error.main' }}
+              sx={{ 
+                color: balance >= 0 ? '#34d399' : '#f87171',
+                fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+                letterSpacing: '-0.5px'
+              }}
             >
               ${balance !== null ? balance.toFixed(2) : '--'}
             </Typography>
-            <AccountBalanceIcon fontSize="small" sx={{ color: '#2563eb' }} />
+            <AccountBalanceIcon fontSize="small" sx={{ color: '#60a5fa' }} />
           </Box>
           
           <Typography variant="body2" color="text.secondary">

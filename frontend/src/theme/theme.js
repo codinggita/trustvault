@@ -145,8 +145,11 @@ const darkTheme = createTheme({
   },
   typography: theme.typography,
   components: {
+    ...theme.components,
     MuiCssBaseline: {
+      ...theme.components.MuiCssBaseline,
       styleOverrides: {
+        ...theme.components.MuiCssBaseline.styleOverrides,
         body: {
           backgroundColor: '#0f172a',
           color: '#f8fafc',
@@ -154,63 +157,42 @@ const darkTheme = createTheme({
       },
     },
     MuiAppBar: {
-      defaultProps: {
-        elevation: 0,
-      },
+      ...theme.components.MuiAppBar,
       styleOverrides: {
+        ...theme.components.MuiAppBar.styleOverrides,
         root: {
-          backgroundColor: '#1e293b',
-          color: '#f8fafc',
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: 6,
-          padding: '8px 24px',
-          fontWeight: 500,
-        },
-        containedPrimary: {
-          backgroundColor: '#60a5fa',
-          '&:hover': {
-            backgroundColor: '#3b82f6',
-          },
-        },
-        outlined: {
-          borderColor: '#60a5fa',
-          color: '#60a5fa',
-          '&:hover': {
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(96, 165, 250, 0.04)',
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 6,
-            '& fieldset': {
-              borderColor: '#475569',
-            },
-            '&:hover fieldset': {
-              borderColor: '#64748b',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#60a5fa',
-            },
-          },
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.18)',
         },
       },
     },
     MuiCard: {
+      ...theme.components.MuiCard,
       styleOverrides: {
+        ...theme.components.MuiCard.styleOverrides,
         root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15)',
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          '&:hover': {
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+          },
+        },
+      },
+    },
+    MuiTypography: {
+      ...(theme.components?.MuiTypography || {}),
+      styleOverrides: {
+        ...(theme.components?.MuiTypography?.styleOverrides || {}),
+        root: {
+          '&.gradient-text': {
+            background: 'linear-gradient(90deg, #60a5fa, #34d399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          },
         },
       },
     },

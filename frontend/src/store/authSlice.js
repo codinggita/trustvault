@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import { setAuthToken } from '../../services/authService'
+import { setAuthToken } from '../services/authService'
 
 // Get base URL from environment
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
@@ -106,10 +106,10 @@ const authSlice = createSlice({
         state.token = action.payload.token
         state.success = true
       })
-      .addCase(login.rejected, (state, action) => {
-        state.isLoading = false
-        state.error = action.payload.message || 'Login failed'
-      })
+       .addCase(login.rejected, (state, action) => {
+         state.isLoading = false
+         state.error = action.payload?.message || action.error.message || 'Login failed'
+       })
       // Register
       .addCase(register.pending, (state) => {
         state.isLoading = true
@@ -122,10 +122,10 @@ const authSlice = createSlice({
         state.token = action.payload.token
         state.success = true
       })
-      .addCase(register.rejected, (state, action) => {
-        state.isLoading = false
-        state.error = action.payload.message || 'Registration failed'
-      })
+       .addCase(register.rejected, (state, action) => {
+         state.isLoading = false
+         state.error = action.payload?.message || action.error.message || 'Registration failed'
+       })
       // Logout
       .addCase(logout.fulfilled, (state) => {
         state.isAuthenticated = false

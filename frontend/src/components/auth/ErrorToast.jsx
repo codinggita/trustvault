@@ -22,7 +22,7 @@ const ErrorToast = () => {
       open={Boolean(error)}
       autoHideDuration={5000}
       onClose={handleClose}
-      ClickawayAction={false}
+      clickawayAction={false}
     >
       <Alert onClose={() => {}} severity="error" sx={{ width: '100%' }}>
         {error}

@@ -101,12 +101,15 @@ const Dashboard = () => {
   if (loading) {
     return (
       <Box 
-        display="flex" 
-        height="100vh" 
-        justifyContent="center" 
-        alignItems="center"
+        sx={{ 
+          display: 'flex', 
+          height: '100vh', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          backgroundColor: '#0f172a'
+        }}
       >
-        <CircularProgress />
+        <CircularProgress sx={{ color: '#60a5fa' }} />
       </Box>
     );
   }
@@ -114,9 +117,11 @@ const Dashboard = () => {
   if (error) {
     return (
       <Box 
-        color="error.text" 
-        textAlign="center" 
-        py={4}
+        sx={{ 
+          color: '#f87171',
+          textAlign: 'center', 
+          py: 4
+        }}
       >
         {error}
       </Box>
@@ -124,10 +129,41 @@ const Dashboard = () => {
   }
 
   return (
-    <Box component="main">
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Box 
+      component="main"
+      sx={{ 
+        backgroundColor: '#0f172a',
+        minHeight: '100vh'
+      }}
+    >
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          py: 4,
+          px: 3
+        }}
+      >
         {/* Hero Section */}
-        <Box className="dashboard-hero" textAlign="center" mb={4}>
+        <Box 
+          className="dashboard-hero" 
+          textAlign="center" 
+          mb={5}
+          sx={{
+            '& h4': {
+              background: 'linear-gradient(90deg, #60a5fa, #34d399)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 700,
+              fontSize: '2.25rem',
+              letterSpacing: '-0.5px'
+            },
+            '& .MuiTypography-body2': {
+              color: '#94a3b8',
+              fontSize: '1.125rem',
+              fontWeight: 400
+            }
+          }}
+        >
           <Typography variant="h4" gutterBottom>
             Welcome back, {user?.firstName}!
           </Typography>
@@ -137,7 +173,7 @@ const Dashboard = () => {
         </Box>
 
         {/* Balance Cards Grid */}
-        <Grid container spacing={3} mb={4}>
+        <Grid container spacing={4} mb={5}>
           {accounts.map((account) => (
             <Grid item xs={12} sm={6} md={4} key={account.id}>
               <BalanceCard account={account} />
@@ -146,20 +182,41 @@ const Dashboard = () => {
         </Grid>
 
         {/* Quick Actions */}
-        <Box mb={4}>
+        <Box mb={5}>
           <QuickActions user={user} accounts={accounts} />
         </Box>
 
         {/* Recent Transactions */}
-        <Box>
+        <Box sx={{ 
+          '& .MuiTypography-h5': {
+            background: 'linear-gradient(90deg, #60a5fa, #34d399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: 600,
+            fontSize: '1.75rem',
+            letterSpacing: '-0.5px'
+          }
+        }}>
           <Typography variant="h5" gutterBottom>
             Recent Transactions
           </Typography>
-          <div className="recent-transactions">
+          <div className="recent-transactions" sx={{
+            '& .recent-transactions': {
+              backgroundColor: 'rgba(30, 41, 59, 0.4)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              borderRadius: 16
+            }
+          }}>
             {accounts.length > 0 ? (
               <RecentTransactions accounts={accounts} />
             ) : (
-              <Box textAlign="center" py={4}>
+              <Box textAlign="center" py={6} sx={{
+                '& .MuiTypography-body2': {
+                  color: '#94a3b8',
+                  fontStyle: 'italic'
+                }
+              }}>
                 <Typography variant="body2" color="text.secondary">
                   No transactions to display
                 </Typography>

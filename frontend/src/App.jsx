@@ -26,7 +26,7 @@ function App() {
         
         {/* Protected routes */}
         <Route 
-          element={<ProtectedRoute>} 
+          element={<ProtectedRoute />}
         >
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />

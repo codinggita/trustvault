@@ -2,10 +2,9 @@ import { Box, Table, TableBody, TableCell, TableHead, TableRow, Paper, Typograph
 import { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { useSelector } from 'react-redux';
-import { useAuthSelector } from '../../store/store';
 
 const RecentTransactions = ({ accounts }) => {
-  const { user } = useAuthSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,35 +68,94 @@ const RecentTransactions = ({ accounts }) => {
 
   if (loading) {
     return (
-      <Box sx={{ minHeight: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <CircularProgress />
-      </Box>
+      <Paper 
+        sx={{ 
+          minHeight: 200, 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          borderRadius: 16
+        }}
+      >
+        <CircularProgress sx={{ color: '#60a5fa' }} />
+      </Paper>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ minHeight: 200, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-        <Typography color="error.text" textAlign="center">
+      <Paper 
+        sx={{ 
+          minHeight: 200, 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          flexDirection: 'column',
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          borderRadius: 16
+        }}
+      >
+        <Typography color="error.text" textAlign="center" sx={{ color: '#f87171' }}>
           {error}
         </Typography>
-      </Box>
+      </Paper>
     );
   }
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
+    <Paper 
+      sx={{ 
+        p: 3,
+        backgroundColor: 'rgba(30, 41, 59, 0.4)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        borderRadius: 16,
+        '&:hover': {
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)'
+        }
+      }}
+    >
+      <Typography variant="h5" gutterBottom sx={{ 
+        color: '#f8fafc',
+        fontWeight: 600,
+        letterSpacing: '-0.5px'
+      }}>
         Recent Transactions
       </Typography>
       {transactions.length === 0 ? (
         <Box textAlign="center" py={4}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ 
+            color: '#94a3b8',
+            fontStyle: 'italic'
+          }}>
             No recent transactions
           </Typography>
         </Box>
       ) : (
-        <Table>
+        <Table 
+          sx={{ 
+            '& .MuiTableCell-root': {
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#f8fafc'
+            },
+            '& .MuiTableHead-root': {
+              '& .MuiTableCell-root': {
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                fontSize: '0.75rem',
+                letterSpacing: '0.5px',
+                color: '#94a3b8'
+              }
+            }
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Date</TableCell>
@@ -107,23 +165,57 @@ const RecentTransactions = ({ accounts }) => {
           </TableHead>
           <TableBody>
             {transactions.map((tx) => (
-              <TableRow key={tx.id} className="transaction-row">
-                <TableCell>
+              <TableRow key={tx.id} className="transaction-row" sx={{
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  transition: 'backgroundColor 0.2s ease'
+                }
+              }}>
+                <TableCell sx={{ 
+                  py: 2,
+                  fontSize: '0.875rem'
+                }}>
                   {new Date(tx.date).toLocaleDateString()}
                 </TableCell>
-                <TableCell align="left">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    {tx.icon && <Box sx={{ width: 24, height: 24, backgroundColor: '#f0f0f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TableCell align="left" sx={{ 
+                  py: 2,
+                  fontSize: '0.875rem'
+                }}>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Box sx={{ 
+                      width: 32, 
+                      height: 32, 
+                      backgroundColor: 'rgba(96, 165, 250, 0.1)', 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      border: '1px solid rgba(96, 165, 250, 0.2)'
+                    }}>
                       {/* In a real app, we would have an icon component here */}
-                    </Box>}
-                    <Typography variant="body2">{tx.description}</Typography>
+                      <Box sx={{ fontSize: '1rem' }}>
+                        💳
+                      </Box>
+                    </Box>
+                    <Typography variant="body2" sx={{ 
+                      fontWeight: 500,
+                      letterSpacing: '-0.25px'
+                    }}>
+                      {tx.description}
+                    </Typography>
                   </Box>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="right" sx={{ 
+                  py: 2,
+                  fontSize: '0.875rem',
+                  fontWeight: 600
+                }}>
                   <Typography 
                     variant="body2" 
-                    fontWeight="500"
-                    sx={{ color: tx.amount < 0 ? 'error.main' : 'success.main' }}
+                    sx={{ 
+                      color: tx.amount < 0 ? '#f87171' : '#34d399',
+                      fontFamily: '"Inter", "Helvetica", "Arial", sans-serif'
+                    }}
                   >
                     {tx.amount < 0 ? '-' : '+'}${Math.abs(tx.amount).toFixed(2)}
                   </Typography>

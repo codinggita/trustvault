@@ -1,6 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './authSlice'
 
+/**
+ * Configure and create the Redux store
+ * @type {import('@reduxjs/toolkit').EnhancedStore}
+ */
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -11,5 +15,12 @@ export const store = configureStore({
     }),
 })
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+/**
+ * Root state type - inferred from store.getState
+ * @typedef {ReturnType<typeof store.getState>} RootState
+ */
+
+/**
+ * App dispatch type - inferred from store.dispatch
+ * @typedef {typeof store.dispatch} AppDispatch
+ */
