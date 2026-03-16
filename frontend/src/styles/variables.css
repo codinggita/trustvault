@@ -1,0 +1,13 @@
+:root {
+  --tv-bg: #0a0a0f;
+  --tv-bg-soft: #111118;
+  --tv-bg-card: rgba(17, 17, 24, 0.72);
+  --tv-gold: #c9a84c;
+  --tv-gold-soft: #e8c96a;
+  --tv-text: #f6f0e3;
+  --tv-muted: #a8a3b3;
+  --tv-line: rgba(255, 255, 255, 0.08);
+  --tv-danger: #f25f5c;
+  --tv-success: #2ab673;
+}
+

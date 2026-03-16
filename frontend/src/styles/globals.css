@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+@import './variables.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-vault-line;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-vault-base font-sans text-vault-text antialiased;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      radial-gradient(circle at top, rgba(201, 168, 76, 0.18), transparent 32%),
+      radial-gradient(circle at 80% 20%, rgba(232, 201, 106, 0.08), transparent 20%);
+    background-size: 48px 48px, 48px 48px, auto, auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-wide text-vault-text;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply rounded-3xl border border-white/10 bg-white/5 shadow-glow backdrop-blur-xl;
+  }
+
+  .gold-ring {
+    @apply focus:border-vault-gold focus:ring-2 focus:ring-vault-gold/40;
+  }
+
+  .text-gradient {
+    background: linear-gradient(120deg, var(--tv-gold-soft), #fff5cf);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .shimmer {
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.06) 8%, rgba(255, 255, 255, 0.16) 18%, rgba(255, 255, 255, 0.06) 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s linear infinite;
+  }
+
+  .input-shell {
+    @apply w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-vault-text outline-none transition duration-300 placeholder:text-vault-muted gold-ring;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-vault-gold to-vault-goldSoft px-5 py-3 text-sm font-semibold text-vault-base shadow-glow transition duration-300 hover:-translate-y-0.5 hover:brightness-105;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-vault-text transition duration-300 hover:-translate-y-0.5 hover:border-vault-gold/50 hover:bg-white/10;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-vault-muted transition duration-300 hover:bg-white/10 hover:text-vault-text;
+  }
+
+  .sidebar-link-active {
+    @apply bg-white/10 text-vault-text shadow-glow;
+  }
+}
