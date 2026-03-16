@@ -6,7 +6,7 @@ import { Input } from '../components/Input';
 import { Card } from '../components/Card';
 import { Toaster } from '../components/ui/Toaster';
 import { toast } from 'sonner';
-import { LogIn, UserPlus } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 
 export const Register = () => {
   const navigate = useNavigate();
