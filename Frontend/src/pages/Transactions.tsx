@@ -15,7 +15,6 @@ export const Transactions = () => {
   }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Keeping user for potential future use when API is implemented
 
   useEffect(() => {
     fetchTransactions();
@@ -56,13 +55,19 @@ export const Transactions = () => {
         }
       ]);
       toast.success('Transactions loaded successfully!');
-     } catch (err: any) {
-       const message = err.response?.data?.message || 'Failed to fetch transactions';
-       toast.error(message);
-       setError(message);
-     } finally {
-       setLoading(false);
-     }
+      } catch (err) {
+        if (err && typeof err === 'object' && 'response' in err) {
+          const errorResponse = err as { response?: { data?: { message?: string } } };
+          const message = errorResponse.response?.data?.message || 'Failed to fetch transactions';
+          toast.error(message);
+          setError(message);
+        } else {
+          toast.error('Failed to fetch transactions');
+          setError('Failed to fetch transactions');
+        }
+      } finally {
+        setLoading(false);
+      }
   };
 
   const handleRefresh = async () => {

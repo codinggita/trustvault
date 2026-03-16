@@ -6,13 +6,7 @@ import { toast } from 'sonner';
 import { SendHorizontal } from 'lucide-react';
 
 export const Transfers = () => {
-  const [accounts, setAccounts] = useState<Array<{
-    id: string;
-    name: string;
-    type: string;
-    balance: number;
-    status: string;
-}>>([]);
+  const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSendModal, setShowSendModal] = useState(false);
@@ -52,18 +46,19 @@ export const Transfers = () => {
          }
        ]);
        toast.success('Accounts loaded successfully!');
-      } catch (err: unknown) {
-        if (err && typeof err === 'object' && 'response' in err) {
-          const message = (err as { response: { data: { message?: string } } }).response.data?.message || 'Failed to fetch accounts';
-          toast.error(message);
-          setError(message);
-        } else {
-          toast.error('Failed to fetch accounts');
-          setError('Failed to fetch accounts');
-        }
-      } finally {
-        setLoading(false);
-      }
+     } catch (err) {
+       if (err && typeof err === 'object' && 'response' in err) {
+         const errorResponse = err as { response?: { data?: { message?: string } } };
+         const message = errorResponse.response?.data?.message || 'Failed to fetch accounts';
+         toast.error(message);
+         setError(message);
+       } else {
+         toast.error('Failed to fetch accounts');
+         setError('Failed to fetch accounts');
+       }
+     } finally {
+       setLoading(false);
+     }
    };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,20 +66,20 @@ export const Transfers = () => {
     setError(null);
     setLoading(true);
     
-     try {
-       // Generate idempotency key for transfer (for future API implementation)
-       // const idempotencyKey = `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-       
-       // TODO: Replace with actual API call
-       // await api.post('/transfers', {
-       //   ...transferData,
-       //   userId: user?.id,
-       //   idempotencyKey
-       // }, {
-       //   headers: {
-       //     'Idempotency-Key': idempotencyKey
-       //   }
-       // });
+    try {
+      // Generate idempotency key for transfer
+      const idempotencyKey = `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // TODO: Replace with actual API call
+      // await api.post('/transfers', {
+      //   ...transferData,
+      //   userId: user?.id,
+      //   idempotencyKey
+      // }, {
+      //   headers: {
+      //     'Idempotency-Key': idempotencyKey
+      //   }
+      // });
       
       // Mock successful transfer
       setShowSendModal(false);
@@ -98,16 +93,17 @@ export const Transfers = () => {
       });
       
       toast.success('Transfer sent successfully!');
-       } catch (err: unknown) {
-         if (err && typeof err === 'object' && 'response' in err) {
-           const message = (err as { response: { data: { message?: string } } }).response.data?.message || 'Transfer failed. Please try again.';
-           toast.error(message);
-           setError(message);
-         } else {
-           toast.error('Transfer failed. Please try again.');
-           setError('Transfer failed. Please try again.');
-         }
-       } finally {
+     } catch (err) {
+       if (err && typeof err === 'object' && 'response' in err) {
+         const errorResponse = err as { response?: { data?: { message?: string } } };
+         const message = errorResponse.response?.data?.message || 'Transfer failed. Please try again.';
+         toast.error(message);
+         setError(message);
+       } else {
+         toast.error('Transfer failed. Please try again.');
+         setError('Transfer failed. Please try again.');
+       }
+     } finally {
        setLoading(false);
      }
   };
@@ -181,22 +177,22 @@ export const Transfers = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Amount ($)</label>
-                   <Input
-                     type="number"
-                     value={transferData.amount}
-                     onChange={(value) => setTransferData(prev => ({ ...prev, amount: value }))}
-                     placeholder="0.00"
-                     className="w-full"
-                   />
+                  <Input
+                    type="number"
+                    value={transferData.amount}
+                    onChange={(e) => setTransferData(prev => ({ ...prev, amount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Description (optional)</label>
-                   <Input
-                     value={transferData.description}
-                     onChange={(value) => setTransferData(prev => ({ ...prev, description: value }))}
-                     placeholder="Add a note..."
-                     className="w-full"
-                   />
+                  <Input
+                    value={transferData.description}
+                    onChange={(e) => setTransferData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Add a note..."
+                    className="w-full"
+                  />
                 </div>
               </div>
               
