@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
@@ -17,66 +17,112 @@ export const Accounts = () => {
      status: string;
    }>>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [createAccountData, setCreateAccountData] = useState({
-    name: '',
-    type: 'checking' as 'checking' | 'savings' | 'credit',
-    initialDeposit: ''
-  });
-  const { user } = useAuthStore(); // Keeping user for potential future use
+   const [error, setError] = useState<string | null>(null);
+   const [showCreateModal, setShowCreateModal] = useState(false);
+   const [createAccountData, setCreateAccountData] = useState({
+     name: '',
+     type: 'checking' as 'checking' | 'savings' | 'credit',
+     initialDeposit: ''
+   });
+    const { user } = useAuthStore(); // Keeping user for potential future use
 
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
-  
-  const fetchAccounts = async () => {
-      setLoading(true);
-      try {
-        // TODO: Replace with actual API call
-        const response = await api.get(`/accounts?userId=${user?.id}`);
-        setAccounts(response.data);
-        
-        // Mock data for now (remove when API is implemented)
-        /* setAccounts([
-          {
-            id: 'acc1',
-            name: 'Checking Account',
-            type: 'checking',
-            balance: 2500.00,
-            status: 'ACTIVE'
-          },
-          {
-            id: 'acc2',
-            name: 'Savings Account',
-            type: 'savings',
-            balance: 15000.00,
-            status: 'ACTIVE'
-          },
-          {
-            id: 'acc3',
-            name: 'Credit Card',
-            type: 'credit',
-            balance: -500.00, // Negative balance for credit
-            status: 'ACTIVE'
-          },
-          {
-            id: 'acc4',
-            name: 'Frozen Account',
-            type: 'checking',
-            balance: 100.00,
-            status: 'FROZEN'
-          }
-        ]); */
-        toast.success('Accounts loaded successfully!');
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to fetch accounts';
-        toast.error(message);
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const fetchAccounts = useCallback(async () => {
+       setLoading(true);
+       try {
+         // TODO: Replace with actual API call
+         const response = await api.get(`/accounts?userId=${user?.id}`);
+         setAccounts(response.data);
+         
+         // Mock data for now (remove when API is implemented)
+         /* setAccounts([
+           {
+             id: 'acc1',
+             name: 'Checking Account',
+             type: 'checking',
+             balance: 2500.00,
+             status: 'ACTIVE'
+           },
+           {
+             id: 'acc2',
+             name: 'Savings Account',
+             type: 'savings',
+             balance: 15000.00,
+             status: 'ACTIVE'
+           },
+           {
+             id: 'acc3',
+             name: 'Credit Card',
+             type: 'credit',
+             balance: -500.00, // Negative balance for credit
+             status: 'ACTIVE'
+           },
+           {
+             id: 'acc4',
+             name: 'Frozen Account',
+             type: 'checking',
+             balance: 100.00,
+             status: 'FROZEN'
+           }
+         ]); */
+         toast.success('Accounts loaded successfully!');
+       } catch (err) {
+         const message = err instanceof Error ? err.message : 'Failed to fetch accounts';
+         toast.error(message);
+         setError(message);
+       } finally {
+         setLoading(false);
+       }
+     }, [user]);
+   
+     useEffect(() => {
+       fetchAccounts();
+     }, [fetchAccounts]);
+       setLoading(true);
+       try {
+         // TODO: Replace with actual API call
+         const response = await api.get(`/accounts?userId=${user?.id}`);
+         setAccounts(response.data);
+         
+         // Mock data for now (remove when API is implemented)
+         /* setAccounts([
+           {
+             id: 'acc1',
+             name: 'Checking Account',
+             type: 'checking',
+             balance: 2500.00,
+             status: 'ACTIVE'
+           },
+           {
+             id: 'acc2',
+             name: 'Savings Account',
+             type: 'savings',
+             balance: 15000.00,
+             status: 'ACTIVE'
+           },
+           {
+             id: 'acc3',
+             name: 'Credit Card',
+             type: 'credit',
+             balance: -500.00, // Negative balance for credit
+             status: 'ACTIVE'
+           },
+           {
+             id: 'acc4',
+             name: 'Frozen Account',
+             type: 'checking',
+             balance: 100.00,
+             status: 'FROZEN'
+           }
+         ]); */
+         toast.success('Accounts loaded successfully!');
+       } catch (err) {
+         const message = err instanceof Error ? err.message : 'Failed to fetch accounts';
+         toast.error(message);
+         setError(message);
+       } finally {
+         setLoading(false);
+       }
+     };
 
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +144,7 @@ export const Accounts = () => {
         status: 'ACTIVE'
       };
       
-       setAccounts(prev => [...prev, newAccount as typeof prev[number]>);
+       setAccounts(prev => [...prev, newAccount]);
       setShowCreateModal(false);
       setCreateAccountData({
         name: '',
@@ -127,20 +173,20 @@ export const Accounts = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-bold text-primary-400">My Accounts</h2>
-        <div className="flex items-center gap-3">
-          <Input
-            placeholder="Search accounts..."
-            className="w-64"
-          />
-          <Button 
-            variant="outline" 
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            New Account
-          </Button>
-        </div>
+         <div className="flex items-center gap-3">
+           <Input
+             placeholder="Search accounts..."
+             className="w-64"
+           />
+           <Button 
+             variant="outline"
+             onClick={() => setShowCreateModal(true)}
+             className="flex items-center gap-2"
+           >
+             <Plus className="h-4 w-4" />
+             New Account
+           </Button>
+         </div>
       </div>
       
       {error && (
@@ -188,12 +234,12 @@ export const Accounts = () => {
           <form onSubmit={handleCreateAccount} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-2">Account Name</label>
-              <Input 
-                placeholder="e.g., My Checking Account"
-                value={createAccountData.name}
-                onChange={(e) => setCreateAccountData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full"
-              />
+                 <Input 
+                   placeholder="e.g., My Checking Account"
+                   value={createAccountData.name}
+                   onChange={(value) => setCreateAccountData(prev => ({ ...prev, name: value }))}
+                   className="w-full"
+                 />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -210,21 +256,20 @@ export const Accounts = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Initial Deposit ($)</label>
-                <Input 
-                  type="number"
-                  value={createAccountData.initialDeposit}
-                  onChange={(e) => setCreateAccountData(prev => ({ ...prev, initialDeposit: e.target.value }))}
-                  placeholder="0.00"
-                  className="w-full"
-                />
+                 <Input 
+                   type="number"
+                   value={createAccountData.initialDeposit}
+                   onChange={(value) => setCreateAccountData(prev => ({ ...prev, initialDeposit: value }))}
+                   placeholder="0.00"
+                   className="w-full"
+                 />
               </div>
             </div>
-            <Button 
-              type="submit" 
-              variant="primary" 
-              className="w-full"
-              disabled={loading}
-            >
+             <Button 
+               variant="primary" 
+               className="w-full"
+               disabled={loading}
+             >
               {loading ? 'Creating account...' : 'Create Account'}
             </Button>
           </form>

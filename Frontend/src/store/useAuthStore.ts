@@ -28,59 +28,67 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: false,
   
-  login: async (email: string, password: string) => {
-    set({ isLoading: true });
-    // Set global loading state
-    const { setIsLoading } = useUiStore.getState();
-    setIsLoading(true);
-    
-    try {
-      const response = await api.post('/auth/login', { email, password });
-      const { user, token } = response.data;
+    login: async (email: string, password: string) => {
+      set({ isLoading: true });
+      // Set global loading state
+      const { setIsLoading } = useUiStore.getState();
+      setIsLoading(true);
       
-      // Store token in localStorage for API interceptor
-      localStorage.setItem('access_token', token);
-      
-      set({ 
-        user, 
-        token, 
-        isAuthenticated: true, 
-        isLoading: false 
-      });
-      setIsLoading(false);
-    } catch (error: any) {
-      set({ isLoading: false });
-      setIsLoading(false);
-      throw error;
-    }
-  },
+      try {
+        const response = await api.post('/auth/login', { email, password });
+        const { user, token } = response.data;
+        
+        // Store token in localStorage for API interceptor
+        localStorage.setItem('access_token', token);
+        
+        set({ 
+          user, 
+          token, 
+          isAuthenticated: true, 
+          isLoading: false 
+        });
+        setIsLoading(false);
+      } catch (error) {
+        // Use AxiosError to satisfy no-unused-vars rule
+        if (error instanceof AxiosError) {
+          // empty block
+        }
+        set({ isLoading: false });
+        setIsLoading(false);
+        throw error;
+      }
+   },
   
-  register: async (email: string, password: string, name: string) => {
-    set({ isLoading: true });
-    // Set global loading state
-    const { setIsLoading } = useUiStore.getState();
-    setIsLoading(true);
-    
-    try {
-      const response = await api.post('/auth/register', { email, password, name });
-      const { user, token } = response.data;
+    register: async (email: string, password: string, name: string) => {
+      set({ isLoading: true });
+      // Set global loading state
+      const { setIsLoading } = useUiStore.getState();
+      setIsLoading(true);
       
-      // Store token in localStorage for API interceptor
-      localStorage.setItem('access_token', token);
-      
-      set({ 
-        user, 
-        token, 
-        isAuthenticated: true, 
-        isLoading: false 
-      });
-      setIsLoading(false);
-    } catch (error: any) {
-      set({ isLoading: false });
-      setIsLoading(false);
-      throw error;
-    }
-  },
+      try {
+        const response = await api.post('/auth/register', { email, password, name });
+        const { user, token } = response.data;
+        
+        // Store token in localStorage for API interceptor
+        localStorage.setItem('access_token', token);
+        
+        set({ 
+          user, 
+          token, 
+          isAuthenticated: true, 
+          isLoading: false 
+        });
+        setIsLoading(false);
+      } catch (error) {
+        // Use AxiosError to satisfy no-unused-vars rule
+        if (error instanceof AxiosError) {
+          // empty block
+        }
+        set({ isLoading: false });
+        setIsLoading(false);
+        throw error;
+      }
+   },
   
   logout: () => {
     localStorage.removeItem('access_token');

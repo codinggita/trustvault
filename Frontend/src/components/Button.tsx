@@ -9,6 +9,7 @@ interface ButtonProps {
   loading?: boolean;
   className?: string;
   children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -20,6 +21,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     loading = false,
     className = '',
     children,
+    onClick,
     ...props
   }, ref) => {
     const baseClasses = 'transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-md font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
@@ -53,13 +55,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'h-11 px-5 text-lg',
     };
 
-    return (
-      <button
-        ref={ref}
-        className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${block ? 'w-full' : ''} ${className}`}
-        disabled={disabled || loading}
-        {...props}
-      >
+     return (
+       <button
+         ref={ref}
+         className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${block ? 'w-full' : ''} ${className}`}
+         disabled={disabled || loading}
+         onClick={onClick}
+         {...props}
+       >
         {loading ? (
           <>
             <Spinner size={size === 'lg' ? 'md' : size} className={`mr-${size === 'lg' ? '2' : size === 'sm' ? '1' : '1.5'}`} />

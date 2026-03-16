@@ -5,6 +5,7 @@ interface ModalProps {
   children: React.ReactNode;
   className?: string;
   onClose: () => void;
+  show?: boolean;
 }
 
 export const Modal = ({ children, className = '', onClose }: ModalProps) => {
