@@ -1,4 +1,14 @@
 {
+  "name": "trustvault",
+  "private": true,
+  "scripts": {
+    "frontend:dev": "npm --prefix Frontend run dev",
+    "frontend:build": "npm --prefix Frontend run build",
+    "frontend:lint": "npm --prefix Frontend run lint",
+    "backend:dev": "npm --prefix Backend run dev",
+    "backend:start": "npm --prefix Backend run start",
+    "check": "npm --prefix Frontend run lint && npm --prefix Frontend run build"
+  },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",

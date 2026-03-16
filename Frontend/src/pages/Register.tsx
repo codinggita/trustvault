@@ -1,118 +1,96 @@
+import { UserRoundPlus } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
-import { Card } from '../components/Card';
-import { Toaster } from '../components/ui/Toaster';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { UserPlus } from 'lucide-react';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { Input } from '../components/Input';
+import { useAuthStore } from '../store/useAuthStore';
+import { getApiErrorMessage } from '../utils/api';
 
 export const Register = () => {
   const navigate = useNavigate();
   const register = useAuthStore((state) => state.register);
+  const isLoading = useAuthStore((state) => state.isLoading);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     try {
       await register(email, password, name);
-      toast.success('Registration successful!');
+      toast.success('Your account is ready.');
       navigate('/dashboard');
-     } catch (err) {
-       if (err && typeof err === 'object' && 'response' in err) {
-         const errorResponse = err as { response?: { data?: { message?: string } } };
-         const message = errorResponse.response?.data?.message || 'Registration failed. Please try again.';
-         toast.error(message);
-       } else {
-         toast.error('Registration failed. Please try again.');
-       }
-     } finally {
-       setLoading(false);
-     }
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          'Registration failed. Please review your details and try again.',
+        ),
+      );
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-6">
-          <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center">
-            <UserPlus className="h-6 w-6 text-primary-400" />
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.18),_transparent_35%),radial-gradient(circle_at_bottom,_rgba(16,185,129,0.12),_transparent_30%)]" />
+      <Card className="relative z-10 w-full max-w-md">
+        <div className="mb-8 flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
+            <UserRoundPlus className="h-6 w-6" />
           </div>
-          <h2 className="ml-4 text-2xl font-bold text-primary-400">Create Account</h2>
+          <div>
+            <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+              TrustVault
+            </p>
+            <h1 className="text-2xl font-semibold text-slate-50">
+              Create your account
+            </h1>
+          </div>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-gray-400">
-              Full Name
-            </label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                value={name}
-                onChange={(value) => setName(value)}
-                className="w-full"
-              />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-400">
-              Email Address
-            </label>
-             <Input
-               id="email"
-               type="email"
-               placeholder="Enter your email"
-               value={email}
-               onChange={(value) => setEmail(value)}
-               className="w-full"
-             />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-400">
-              Password
-            </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(value) => setPassword(value)}
-                className="w-full"
-              />
-          </div>
-          
-          <Button 
-            type="submit" 
-            variant="primary" 
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? 'Creating account...' : 'Sign Up'}
+          <Input
+            id="name"
+            type="text"
+            label="Full name"
+            placeholder="Alex Johnson"
+            value={name}
+            onChange={setName}
+            required
+          />
+          <Input
+            id="email"
+            type="email"
+            label="Email address"
+            placeholder="you@example.com"
+            value={email}
+            onChange={setEmail}
+            required
+          />
+          <Input
+            id="password"
+            type="password"
+            label="Password"
+            placeholder="At least 6 characters"
+            value={password}
+            onChange={setPassword}
+            required
+          />
+          <Button type="submit" block loading={isLoading}>
+            Create account
           </Button>
         </form>
-        
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-400">
-            Already have an account?{' '}
-            <a 
-              href="/login"
-              className="text-primary-400 hover:text-primary-300 transition-colors"
-            >
-              Sign In
-            </a>
-          </p>
-        </div>
+
+        <p className="mt-6 text-sm text-slate-400">
+          Already registered?{' '}
+          <Link className="font-medium text-sky-300 hover:text-sky-200" to="/login">
+            Sign in
+          </Link>
+        </p>
       </Card>
-      <Toaster />
     </div>
   );
 };

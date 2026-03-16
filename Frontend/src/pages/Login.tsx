@@ -1,188 +1,84 @@
+import { ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
-import { Toaster } from '../components/ui/Toaster';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { LogIn } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { Input } from '../components/Input';
+import { useAuthStore } from '../store/useAuthStore';
+import { getApiErrorMessage } from '../utils/api';
 
 export const Login = () => {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     try {
       await login(email, password);
-      toast.success('Login successful!');
+      toast.success('Welcome back.');
       navigate('/dashboard');
-    } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const errorResponse = err as { response?: { data?: { message?: string } } };
-        const message = errorResponse.response?.data?.message || 'Login failed. Please check your credentials.';
-        toast.error(message);
-      } else {
-        toast.error('Login failed. Please check your credentials.');
-      }
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          'Login failed. Please check your credentials and try again.',
+        ),
+      );
     }
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.6 }}
-      className="min-h-screen bg-gradient-to-br from-background-900 to-background-800 flex items-center justify-center p-4"
-    >
-      <AnimatePresence>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full max-w-md bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
-        >
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex items-center justify-center mb-6"
-          >
-            <motion.div 
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="w-12 h-12 bg-gradient-to-tr from-primary-500 to-primary-400/20 rounded-xl flex items-center justify-center"
-            >
-              <LogIn className="h-6 w-6 text-primary-400" />
-            </motion.div>
-            <motion.h2 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="ml-4 text-2xl font-bold text-gradient-to-tr from-primary-400 to-primary-300 bg-clip-text text-transparent"
-            >
-              Welcome Back
-            </motion.h2>
-          </motion.div>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.6, delay: 1.0 }}
-              className="space-y-2"
-            >
-              <motion.label 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                htmlFor="email"
-                className="text-sm font-medium text-gray-400"
-              >
-                Email Address
-              </motion.label>
-              <motion.input 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-background-700/50 border border-primary-500/30 rounded-lg focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30 text-gray-200 placeholder-gray-500 transition-all duration-300"
-              />
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
-              className="space-y-2"
-            >
-              <motion.label 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                htmlFor="password"
-                className="text-sm font-medium text-gray-400"
-              >
-                Password
-              </motion.label>
-              <motion.input 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-background-700/50 border border-primary-500/30 rounded-lg focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30 text-gray-200 placeholder-gray-500 transition-all duration-300"
-              />
-            </motion.div>
-            
-            <motion.button 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.6, delay: 1.4 }}
-              type="submit"
-              className="w-full px-4 py-3 bg-gradient-to-tr from-primary-500 to-primary-400 text-white font-medium rounded-lg hover:from-primary-400 hover:to-primary-500 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loading}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </motion.button>
-          </form>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.6, delay: 1.6 }}
-            className="text-center mt-6"
-          >
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-sm text-gray-400"
-            >
-              Don't have an account?{' '}
-              <motion.a 
-                href="/register"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="text-primary-400 hover:text-primary-300 transition-colors"
-              >
-                Sign Up
-              </motion.a>
-            </motion.p>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-      <Toaster />
-    </motion.div>
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.15),_transparent_35%),radial-gradient(circle_at_bottom,_rgba(16,185,129,0.12),_transparent_30%)]" />
+      <Card className="relative z-10 w-full max-w-md">
+        <div className="mb-8 flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-300">
+            <ShieldCheck className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+              TrustVault
+            </p>
+            <h1 className="text-2xl font-semibold text-slate-50">Sign in</h1>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            id="email"
+            type="email"
+            label="Email address"
+            placeholder="you@example.com"
+            value={email}
+            onChange={setEmail}
+            required
+          />
+          <Input
+            id="password"
+            type="password"
+            label="Password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={setPassword}
+            required
+          />
+          <Button type="submit" block loading={isLoading}>
+            Sign in
+          </Button>
+        </form>
+
+        <p className="mt-6 text-sm text-slate-400">
+          Need an account?{' '}
+          <Link className="font-medium text-sky-300 hover:text-sky-200" to="/register">
+            Create one
+          </Link>
+        </p>
+      </Card>
+    </div>
   );
 };

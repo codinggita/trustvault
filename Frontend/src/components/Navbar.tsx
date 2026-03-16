@@ -1,181 +1,67 @@
+import { LogOut, ShieldCheck } from 'lucide-react';
+import { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { useLocation, NavLink } from 'react-router-dom';
-import { LogOut, UserCircle, Menu } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from './Button';
 
 interface NavbarProps {
   className?: string;
 }
 
+const routeTitles: Record<string, string> = {
+  '/dashboard': 'Dashboard',
+  '/accounts': 'Accounts',
+  '/transactions': 'Transactions',
+  '/transfers': 'Transfers',
+};
+
 export const Navbar = ({ className = '' }: NavbarProps) => {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const location = useLocation();
-  const isAuthRoute = ['/login', '/register'].includes(location.pathname);
+
+  const pageTitle = useMemo(
+    () => routeTitles[location.pathname] ?? 'TrustVault',
+    [location.pathname],
+  );
 
   return (
-    <motion.header 
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: -20, opacity: 0 }}
-      transition={{ duration: 0.6 }}
-      className={`flex items-center justify-between px-4 py-3 bg-background-900/50 backdrop-blur-sm border-b border-border/20 ${className}`}
+    <header
+      className={`sticky top-0 z-20 border-b border-slate-800 bg-slate-950/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 ${className}`}
     >
-      <AnimatePresence>
-        {!isAuthRoute && (
-          <motion.button 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="md:hidden text-gray-400 hover:text-gray-200"
-            onClick={() => {
-              // Mobile menu toggle would go here
-            }}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-300">
+            <ShieldCheck className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+              Secure Workspace
+            </p>
+            <h1 className="text-xl font-semibold text-slate-50">{pageTitle}</h1>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2">
+            <p className="text-sm font-medium text-slate-100">
+              {user?.name || 'Guest'}
+            </p>
+            <p className="text-xs text-slate-400">{user?.email || 'No email'}</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void logout()}
+            className="shrink-0"
           >
-            <Menu className="h-5 w-5" />
-          </motion.button>
-        )}
-        
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center gap-4"
-        >
-          <motion.h1 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
-            className="text-xl font-bold text-gradient-to-tr from-primary-400 to-primary-300 bg-clip-text text-transparent hidden md:block"
-          >
-            TrustVault
-          </motion.h1>
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.4, delay: 0.6 }}
-            className="hidden md:flex items-center gap-4"
-          >
-            <NavLink
-              to="/dashboard"
-              end
-              className={({ isActive }) => {
-                return `
-                  flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all
-                  ${isActive
-                    ? 'bg-primary-500/20 text-primary-400 shadow-inner'
-                    : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-                  }
-                `;
-              }}
-            >
-              Dashboard
-            </NavLink>
-            <NavLink
-              to="/accounts"
-              end
-              className={({ isActive }) => {
-                return `
-                  flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all
-                  ${isActive
-                    ? 'bg-primary-500/20 text-primary-400 shadow-inner'
-                    : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-                  }
-                `;
-              }}
-            >
-              Accounts
-            </NavLink>
-            <NavLink
-              to="/transactions"
-              end
-              className={({ isActive }) => {
-                return `
-                  flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all
-                  ${isActive
-                    ? 'bg-primary-500/20 text-primary-400 shadow-inner'
-                    : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-                  }
-                `;
-              }}
-            >
-              Transactions
-            </NavLink>
-            <NavLink
-              to="/transfers"
-              end
-              className={({ isActive }) => {
-                return `
-                  flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all
-                  ${isActive
-                    ? 'bg-primary-500/20 text-primary-400 shadow-inner'
-                    : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-                  }
-                `;
-              }}
-            >
-              Transfers
-            </NavLink>
-          </motion.div>
-        </motion.div>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="flex items-center gap-3"
-        >
-          <motion.button 
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.4 }}
-            className="text-gray-400 hover:text-gray-200 hover:scale-110 transition-transform duration-300"
-          >
-            <UserCircle className="h-5 w-5" />
-          </motion.button>
-          {user && (
-            <motion.div 
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="relative"
-            >
-              <motion.button 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                className="flex items-center space-x-2 text-gray-400 hover:text-gray-200 hover:scale-105 transition-transform duration-300"
-              >
-                <span className="truncate max-w-xs">{user.name}</span>
-                <Menu className="h-4 w-4" />
-              </motion.button>
-              {/* Dropdown menu would go here */}
-            </motion.div>
-          )}
-          {!isAuthRoute && user && (
-            <motion.button 
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              className="text-red-500 hover:text-red-400 hover:scale-110 transition-transform duration-300"
-              onClick={() => {
-                // Logout would be handled by auth store
-              }}
-            >
-              <LogOut className="h-5 w-5" />
-            </motion.button>
-          )}
-        </motion.div>
-      </AnimatePresence>
-    </motion.header>
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </Button>
+        </div>
+      </div>
+    </header>
   );
 };
+
 Navbar.displayName = 'Navbar';
