@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { useAuthStore } from '../store/useAuthStore';
-import { api } from '../utils/api';
 import { toast } from 'sonner';
 import { Clock, Banknote, RefreshCw } from 'lucide-react';
 
