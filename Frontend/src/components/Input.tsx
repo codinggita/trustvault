@@ -1,6 +1,7 @@
 import { forwardRef, useState } from 'react';
 
 interface InputProps {
+  id?: string;
   type?: string;
   placeholder?: string;
   value?: string;
