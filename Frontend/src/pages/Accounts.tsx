@@ -5,6 +5,7 @@ import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
 import { useAuthStore } from '../store/useAuthStore';
 import { api } from '../utils/api';
+import { toast } from 'sonner';
 import { Banknote, Plus } from 'lucide-react';
 
 export const Accounts = () => {
@@ -42,7 +43,9 @@ export const Accounts = () => {
           status: 'ACTIVE'
         }
       ]);
+      toast.success('Accounts loaded successfully!');
     } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to fetch accounts');
       setError(err.response?.data?.message || 'Failed to fetch accounts');
     } finally {
       setLoading(false);
@@ -72,7 +75,9 @@ export const Accounts = () => {
       
       setAccounts(prev => [...prev, newAccount]);
       setShowCreateModal(false);
+      toast.success('Account created successfully!');
     } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to create account');
       setError(err.response?.data?.message || 'Failed to create account');
     } finally {
       setLoading(false);

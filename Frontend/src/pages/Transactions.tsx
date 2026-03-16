@@ -3,6 +3,7 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { useAuthStore } from '../store/useAuthStore';
 import { api } from '../utils/api';
+import { toast } from 'sonner';
 import { Clock, Banknote, RefreshCw } from 'lucide-react';
 
 export const Transactions = () => {
@@ -49,7 +50,9 @@ export const Transactions = () => {
           status: 'pending'
         }
       ]);
+      toast.success('Transactions loaded successfully!');
     } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to fetch transactions');
       setError(err.response?.data?.message || 'Failed to fetch transactions');
     } finally {
       setLoading(false);

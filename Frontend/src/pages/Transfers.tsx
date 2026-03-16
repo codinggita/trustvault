@@ -5,6 +5,7 @@ import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
 import { useAuthStore } from '../store/useAuthStore';
 import { api } from '../utils/api';
+import { toast } from 'sonner';
 import { Banknote, RefreshCw, SendHorizontal } from 'lucide-react';
 
 export const Transfers = () => {
@@ -48,7 +49,9 @@ export const Transfers = () => {
           status: 'ACTIVE'
         }
       ]);
+      toast.success('Accounts loaded successfully!');
     } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to fetch accounts');
       setError(err.response?.data?.message || 'Failed to fetch accounts');
     } finally {
       setLoading(false);
@@ -85,7 +88,10 @@ export const Transfers = () => {
         amount: '',
         description: ''
       });
+      
+      toast.success('Transfer sent successfully!');
     } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Transfer failed. Please try again.');
       setError(err.response?.data?.message || 'Transfer failed. Please try again.');
     } finally {
       setLoading(false);
