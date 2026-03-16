@@ -1,22 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
 import { useAuthStore } from '../store/useAuthStore';
 import { toast } from 'sonner';
+import { SendHorizontal } from 'lucide-react';
 
 export const Transfers = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSendModal, setShowSendModal] = useState(false);
-  const [transferData, setTransferData] = useState({
-    fromAccount: '',
-    toAccount: '',
-    amount: '',
-    description: ''
-  });
-  const { user } = useAuthStore(); // Keeping user for potential future use when API is implemented
+   const [transferData, setTransferData] = useState({
+     fromAccount: '',
+     toAccount: '',
+     amount: '',
+     description: ''
+   });
+   // const { user } = useAuthStore(); // Keeping user for potential future use when API is implemented
 
   useEffect(() => {
     fetchAccounts();

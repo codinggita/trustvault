@@ -1,0 +1,10 @@
+     try {
+       await login(email, password);
+       toast.success('Login successful!');
+       navigate('/dashboard');
+     } catch (err) {
+       const message = (err && typeof err === 'object' && 'response' in err && err.response?.data?.message) ? err.response.data.message : 'Login failed. Please check your credentials.';
+       toast.error(message);
+     } finally {
+       setLoading(false);
+     };
