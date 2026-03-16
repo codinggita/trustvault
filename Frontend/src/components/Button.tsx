@@ -10,6 +10,7 @@ interface ButtonProps {
   className?: string;
   children: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

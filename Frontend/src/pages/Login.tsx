@@ -17,21 +17,21 @@ export const Login = () => {
     e.preventDefault();
     setLoading(true);
     
-    try {
-      await login(email, password);
-      toast.success('Login successful!');
-      navigate('/dashboard');
-    } catch (err) {
-      const message = err.response?.data?.message || 'Login failed. Please check your credentials.';
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+     try {
+       await login(email, password);
+       toast.success('Login successful!');
+       navigate('/dashboard');
+     } catch (err) {
+     try {
+       await login(email, password);
+       toast.success('Login successful!');
+       navigate('/dashboard');
+     } catch (err) {
+       const message = (err && typeof err === 'object' && 'response' in err && err.response?.data?.message) ? err.response.data.message : 'Login failed. Please check your credentials.';
+       toast.error(message);
+     } finally {
+       setLoading(false);
+     }
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6 }}

@@ -3,15 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { Toaster } from '../components/ui/Toaster';
 import { toast } from 'sonner';
-import { UserPlus } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const Register = () => {
+export const Login = () => {
   const navigate = useNavigate();
-  const register = useAuthStore((state) => state.register);
+  const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,20 +18,19 @@ export const Register = () => {
     setLoading(true);
     
      try {
-       await register(email, password, name);
-       toast.success('Registration successful!');
+       await login(email, password);
+       toast.success('Login successful!');
        navigate('/dashboard');
-     } catch (err: any) {
-       const message = err.response?.data?.message || 'Registration failed. Please try again.';
+     try {
+       await login(email, password);
+       toast.success('Login successful!');
+       navigate('/dashboard');
+     } catch (err) {
+       const message = (err && typeof err === 'object' && 'response' in err && err.response?.data?.message) ? err.response.data.message : 'Login failed. Please check your credentials.';
        toast.error(message);
      } finally {
        setLoading(false);
      }
-  };
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6 }}
@@ -60,7 +58,7 @@ export const Register = () => {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="w-12 h-12 bg-gradient-to-tr from-primary-500 to-primary-400/20 rounded-xl flex items-center justify-center"
             >
-              <UserPlus className="h-6 w-6 text-primary-400" />
+              <LogIn className="h-6 w-6 text-primary-400" />
             </motion.div>
             <motion.h2 
               initial={{ opacity: 0, x: -10 }}
@@ -69,7 +67,7 @@ export const Register = () => {
               transition={{ duration: 0.6, delay: 0.8 }}
               className="ml-4 text-2xl font-bold text-gradient-to-tr from-primary-400 to-primary-300 bg-clip-text text-transparent"
             >
-              Create Account
+              Welcome Back
             </motion.h2>
           </motion.div>
           
@@ -79,37 +77,6 @@ export const Register = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.6, delay: 1.0 }}
-              className="space-y-2"
-            >
-              <motion.label 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                htmlFor="name"
-                className="text-sm font-medium text-gray-400"
-              >
-                Full Name
-              </motion.label>
-              <motion.input 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.4 }}
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-background-700/50 border border-primary-500/30 rounded-lg focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30 text-gray-200 placeholder-gray-500 transition-all duration-300"
-              />
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
               className="space-y-2"
             >
               <motion.label 
@@ -140,7 +107,7 @@ export const Register = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.6, delay: 1.4 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
               className="space-y-2"
             >
               <motion.label 
@@ -171,12 +138,12 @@ export const Register = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.6, delay: 1.6 }}
+              transition={{ duration: 0.6, delay: 1.4 }}
               type="submit"
               className="w-full px-4 py-3 bg-gradient-to-tr from-primary-500 to-primary-400 text-white font-medium rounded-lg hover:from-primary-400 hover:to-primary-500 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </motion.button>
           </form>
           
@@ -184,32 +151,30 @@ export const Register = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.6, delay: 1.8 }}
+            transition={{ duration: 0.6, delay: 1.6 }}
             className="text-center mt-6"
           >
             <motion.p 
- 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
               className="text-sm text-gray-400"
             >
-              Already have an account?{' '}
+              Don't have an account?{' '}
               <motion.a 
-                 href="/login"
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 exit={{ opacity: 0 }}
-                 transition={{ duration: 0.4 }}
-                 className="text-primary-400 hover:text-primary-300 transition-colors"
-               >
-                 Sign In
-               </motion.a>
-             </motion.p>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+                href="/register"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-primary-400 hover:text-primary-300 transition-colors"
+              >
+                Sign Up
+              </motion.a>
+            </motion.p>
+           </motion.div>
+         </motion.div>
       </AnimatePresence>
       <Toaster />
     </motion.div>
