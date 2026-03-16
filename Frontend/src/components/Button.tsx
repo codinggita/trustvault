@@ -1,10 +1,12 @@
 import { forwardRef } from 'react';
+import { Spinner } from './Spinner';
 
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   block?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   className?: string;
   children: React.ReactNode;
 }
@@ -15,6 +17,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     size = 'md',
     block = false,
     disabled = false,
+    loading = false,
     className = '',
     children,
     ...props
@@ -54,12 +57,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${block ? 'w-full' : ''} ${className}`}
-        disabled={disabled}
+        disabled={disabled || loading}
         {...props}
       >
-        {children}
+        {loading ? (
+          <>
+            <Spinner size={size === 'lg' ? 'md' : size} className={`mr-${size === 'lg' ? '2' : size === 'sm' ? '1' : '1.5'}`} />
+            <span className="opacity-75">{children}</span>
+          </>
+        ) : (
+          children
+        )}
       </button>
     );
   }
 );
+
 Button.displayName = 'Button';

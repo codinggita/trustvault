@@ -8,6 +8,7 @@ import { Transfers } from './pages/Transfers';
 import { MainLayout } from './components/layout/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useAuthStore } from './store/useAuthStore';
+import { Toaster } from './components/ui/Toaster';
 
 function App() {
   const { isAuthenticated } = useAuthStore();
@@ -42,6 +43,7 @@ function App() {
           />
         </Routes>
       )}
+      <Toaster />
     </BrowserRouter>
   );
 }
