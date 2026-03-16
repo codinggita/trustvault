@@ -4,6 +4,8 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
+import { Toaster } from '../components/ui/Toaster';
+import { toast } from 'sonner';
 import { LogIn, UserPlus } from 'lucide-react';
 
 export const Register = () => {
@@ -12,19 +14,18 @@ export const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     
     try {
       await register(email, password, name);
+      toast.success('Registration successful!');
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -83,12 +84,6 @@ export const Register = () => {
             />
           </div>
           
-          {error && (
-            <p className="text-sm text-red-500 bg-red-50/20 px-3 py-2 rounded-md">
-              {error}
-            </p>
-          )}
-          
           <Button 
             type="submit" 
             variant="primary" 
@@ -111,6 +106,7 @@ export const Register = () => {
           </p>
         </div>
       </Card>
+      <Toaster />
     </div>
   );
 };

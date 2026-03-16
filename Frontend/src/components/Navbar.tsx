@@ -1,5 +1,5 @@
 import { useAuthStore } from '../store/useAuthStore';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { LogOut, UserCircle, Menu } from 'lucide-react';
 
 interface NavbarProps {
