@@ -75,6 +75,7 @@ MONGODB_URI=mongodb://localhost:27017/trustvault
 JWT_SECRET=your_super_secret_key_here
 JWT_EXPIRY=3d
 COOKIE_EXPIRY=259200000
+COOKIE_SAME_SITE=lax
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
@@ -117,6 +118,7 @@ Backend runs at `http://localhost:5000`
 
 - Auth restoration happens on app load through `GET /api/auth/me`
 - Cookies use `sameSite: lax` in development and `strict` in production
+- For cross-site frontend/backend deployments such as Netlify + Render, set `COOKIE_SAME_SITE=none`
 - Backend API routes are all prefixed with `/api`
 - Registration automatically credits new users with `₹10,000` from the system account
 
