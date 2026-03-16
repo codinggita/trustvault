@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import api from '../utils/api';
+import { AxiosError } from 'axios';
 
 interface AuthState {
   user: {
@@ -28,26 +30,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.post('/auth/login', { email, password });
-      // const { user, token } = response.data;
+      const response = await api.post('/auth/login', { email, password });
+      const { user, token } = response.data;
       
-      // Mock response for now
-      const mockUser = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        role: 'user'
-      };
-      const mockToken = 'mock-jwt-token';
+      // Store token in localStorage for API interceptor
+      localStorage.setItem('access_token', token);
       
       set({ 
-        user: mockUser, 
-        token: mockToken, 
+        user, 
+        token, 
         isAuthenticated: true, 
         isLoading: false 
       });
-    } catch (error) {
+    } catch (error: any) {
       set({ isLoading: false });
       throw error;
     }
@@ -56,32 +51,26 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (email: string, password: string, name: string) => {
     set({ isLoading: true });
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.post('/auth/register', { email, password, name });
-      // const { user, token } = response.data;
+      const response = await api.post('/auth/register', { email, password, name });
+      const { user, token } = response.data;
       
-      // Mock response for now
-      const mockUser = {
-        id: '1',
-        email,
-        name,
-        role: 'user'
-      };
-      const mockToken = 'mock-jwt-token';
+      // Store token in localStorage for API interceptor
+      localStorage.setItem('access_token', token);
       
       set({ 
-        user: mockUser, 
-        token: mockToken, 
+        user, 
+        token, 
         isAuthenticated: true, 
         isLoading: false 
       });
-    } catch (error) {
+    } catch (error: any) {
       set({ isLoading: false });
       throw error;
     }
   },
   
   logout: () => {
+    localStorage.removeItem('access_token');
     set({ user: null, token: null, isAuthenticated: false });
   },
   

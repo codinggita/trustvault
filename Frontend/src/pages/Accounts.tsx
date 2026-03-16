@@ -4,9 +4,8 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
 import { useAuthStore } from '../store/useAuthStore';
-import { api } from '../utils/api';
 import { toast } from 'sonner';
-import { Banknote, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export const Accounts = () => {
   const [accounts, setAccounts] = useState([]);
