@@ -1,95 +1,43 @@
-import type { PropsWithChildren } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import { SkeletonLoader } from './SkeletonLoader';
 
 interface CardProps extends PropsWithChildren {
   className?: string;
-  header?: React.ReactNode;
-  footer?: React.ReactNode;
+  header?: ReactNode;
+  footer?: ReactNode;
   loading?: boolean;
-  skeletonConfig?: {
-    header?: boolean;
-    body?: boolean;
-    bodyRows?: number;
-    footer?: boolean;
-  };
+  skeletonRows?: number;
 }
 
-export const Card = ({ 
-  children, 
-  className = '', 
-  header, 
-  footer, 
+export const Card = ({
+  children,
+  className = '',
+  header,
+  footer,
   loading = false,
-  skeletonConfig = {}
+  skeletonRows = 3,
 }: CardProps) => {
-  if (loading) {
-    return (
-      <div className={`bg-background-800/50 backdrop-blur-glass border border-border/20 rounded-glass p-6 ${className}`}>
-        {skeletonConfig.header !== false && header ? (
-          <SkeletonLoader 
-            className="mb-4" 
-            width="60%" 
-            height="1.5rem"
-          />
-        ) : null}
-        <div className="space-y-4">
-         {Array.isArray(children) && skeletonConfig.body ? (
-             children.map((_, index) => (
-               <SkeletonLoader 
-                 key={index} 
-                 className="mb-2" 
-                 width="100%" 
-                 height="1rem"
-               />
-             ))
-           ) : (
-            skeletonConfig.body && !Array.isArray(children) ? (
-              <SkeletonLoader 
-                className="mb-2" 
-                width="100%" 
-                height="1rem"
-              />
-            ) : (
-              children
-            )
-          )}
-          {(Array.isArray(children) && children.length > 1) || !Array.isArray(children) ? (
-            skeletonConfig.body && (
-              <SkeletonLoader 
-                className="mb-2" 
-                width="80%" 
-                height="1rem"
-              />
-            )
-          ) : null}
-          {skeletonConfig.body && skeletonConfig.bodyRows ? (
-            Array.from({ length: skeletonConfig.bodyRows }).map((_, index) => (
-              <SkeletonLoader 
-                key={index} 
-                className="mb-2" 
-                width="70%" 
-                height="1rem"
-              />
-            ))
-          ) : null}
-          {skeletonConfig.footer !== false && footer ? (
-            <SkeletonLoader 
-              className="mt-4" 
-              width="50%" 
-              height="1rem"
-            />
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`bg-background-800/50 backdrop-blur-glass border border-border/20 rounded-glass p-6 ${className}`}>
-      {header && <div className="mb-4">{header}</div>}
-      <div className="space-y-4">{children}</div>
-      {footer && <div className="mt-4">{footer}</div>}
-    </div>
+    <section
+      className={`rounded-3xl border border-slate-800 bg-slate-900/85 p-6 shadow-xl shadow-slate-950/30 backdrop-blur ${className}`}
+    >
+      {header ? <div className="mb-4">{header}</div> : null}
+      {loading ? (
+        <div className="space-y-3">
+          {Array.from({ length: skeletonRows }).map((_, index) => (
+            <SkeletonLoader
+              key={index}
+              className="rounded-xl"
+              height="1rem"
+              width={index === skeletonRows - 1 ? '75%' : '100%'}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">{children}</div>
+      )}
+      {footer ? <div className="mt-4">{footer}</div> : null}
+    </section>
   );
 };
 

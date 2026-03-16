@@ -1,57 +1,48 @@
-import { forwardRef, useState } from 'react';
+import {
+  forwardRef,
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from 'react';
 
-interface InputProps {
-  id?: string;
-  type?: string;
-  placeholder?: string;
-  value?: string;
+interface InputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  label?: string;
+  error?: string;
+  icon?: ReactNode;
   onChange?: (value: string) => void;
-  className?: string;
-  disabled?: boolean;
-  error?: boolean;
-  icon?: React.ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-   ({
-     type = 'text',
-     placeholder = '',
-     value = '',
-     onChange,
-     className = '',
-     disabled = false,
-     error = false,
-     icon,
-     ...props
-   }, forwardedRef) => {
-     const [isFocused, setIsFocused] = useState(false);
+  ({ id, label, error, icon, className = '', onChange, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
 
-     const baseClasses = 'transition-all duration-200 ease-in-out w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    return (
+      <div className="space-y-2">
+        {label ? (
+          <label htmlFor={inputId} className="text-sm font-medium text-slate-300">
+            {label}
+          </label>
+        ) : null}
+        <div className="relative">
+          {icon ? (
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500">
+              {icon}
+            </span>
+          ) : null}
+          <input
+            id={inputId}
+            ref={ref}
+            onChange={(event) => onChange?.(event.target.value)}
+            className={`w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 ${icon ? 'pl-10' : ''} ${error ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : ''} ${className}`}
+            {...props}
+          />
+        </div>
+        {error ? <p className="text-sm text-rose-400">{error}</p> : null}
+      </div>
+    );
+  },
+);
 
-     const variantClasses = error
-       ? 'border-red-500 text-red-500 focus:ring-red-500 focus:ring-offset-red-500'
-       : isFocused
-       ? 'border-primary-500 text-primary-600 focus:ring-primary-500 focus:ring-offset-primary-500'
-       : 'border-gray-300 text-gray-700 focus:border-gray-400';
-
-     return (
-       <div className="flex items-center gap-2">
-         {icon && <span className="text-gray-400">{icon}</span>}
-         <input
-           type={type}
-           placeholder={placeholder}
-           value={value}
-           onChange={(e) => {
-             setIsFocused(true);
-             onChange?.(e.target.value);
-           }}
-           ref={forwardedRef}
-           className={`${baseClasses} ${variantClasses} ${className}`}
-           disabled={disabled}
-           {...props}
-         />
-       </div>
-     );
-   }
- );
 Input.displayName = 'Input';

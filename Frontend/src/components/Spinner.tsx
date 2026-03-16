@@ -16,14 +16,14 @@ export const Spinner = forwardRef<HTMLDivElement, SpinnerProps>(
     return (
       <div
         ref={ref}
-        className={`animate-spin rounded-full border-2 border-primary-500 border-t-transparent ${sizeClasses[size]} ${className}`}
+        className={`animate-spin rounded-full border-2 border-sky-500 border-t-transparent ${sizeClasses[size]} ${className}`}
         role="status"
         {...props}
       >
         <span className="sr-only">Loading...</span>
       </div>
     );
-  }
+  },
 );
 
 Spinner.displayName = 'Spinner';

@@ -1,164 +1,67 @@
+import {
+  ArrowLeftRight,
+  Landmark,
+  LayoutDashboard,
+  ReceiptText,
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface SidebarProps {
   className?: string;
 }
 
+const navigationItems = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/accounts', label: 'Accounts', icon: Landmark },
+  { to: '/transactions', label: 'Transactions', icon: ReceiptText },
+  { to: '/transfers', label: 'Transfers', icon: ArrowLeftRight },
+];
+
 export const Sidebar = ({ className = '' }: SidebarProps) => {
   return (
-    <motion.aside 
-      initial={{ x: -60, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -60, opacity: 0 }}
-      transition={{ duration: 0.6 }}
-      className={`flex-col flex-shrink-0 w-64 bg-background-900/50 backdrop-blur-lg border-r border-primary-500/20 ${className}`}
+    <aside
+      className={`hidden w-72 shrink-0 border-r border-slate-800 bg-slate-950/95 px-4 py-6 backdrop-blur md:flex md:flex-col ${className}`}
     >
-      <AnimatePresence>
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center p-4 border-b border-primary-500/10"
-        >
-          <motion.span 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4 }}
-            className="text-xl font-bold text-gradient-to-tr from-primary-400 to-primary-300 bg-clip-text text-transparent"
-          >
-            TrustVault
-          </motion.span>
-        </motion.div>
-        
-        <motion.nav 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-6 space-y-1"
-        >
-           <NavLink
-             to="/dashboard"
-             end
-             className={({ isActive }) => `
-               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-               ${isActive
-                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-               }
-             `}
-           >
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3 }}
-              className="mr-3"
+      <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+        <p className="text-xs uppercase tracking-[0.3em] text-sky-300">
+          TrustVault
+        </p>
+        <h2 className="mt-3 text-2xl font-semibold text-slate-50">
+          Personal banking cockpit
+        </h2>
+        <p className="mt-2 text-sm text-slate-400">
+          Track balances, create accounts, and move money from one secure place.
+        </p>
+      </div>
+
+      <nav className="mt-8 flex flex-col gap-2">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-sky-500/15 text-sky-200'
+                    : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100'
+                }`
+              }
             >
-              📊
-            </motion.span>
-            Dashboard
-          </NavLink>
-          
-           <NavLink
-             to="/accounts"
-             end
-             className={({ isActive }) => `
-               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-               ${isActive
-                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-               }
-             `}
-           >
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3 }}
-              className="mr-3"
-            >
-              🏦
-            </motion.span>
-            Accounts
-          </NavLink>
-          
-           <NavLink
-             to="/transactions"
-             end
-             className={({ isActive }) => `
-               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-               ${isActive
-                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-               }
-             `}
-           >
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3 }}
-              className="mr-3"
-            >
-              💳
-            </motion.span>
-            Transactions
-          </NavLink>
-          
-           <NavLink
-             to="/transfers"
-             end
-             className={({ isActive }) => `
-               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300
-               ${isActive
-                 ? 'bg-gradient-to-tr from-primary-500/20 to-primary-400/20 text-primary-400 shadow-inner hover:from-primary-500/25 hover:to-primary-400/25'
-                 : 'text-gray-400 hover:bg-gray-50/50 hover:text-gray-100'
-               }
-             `}
-           >
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3 }}
-              className="mr-3"
-            >
-              🔄
-            </motion.span>
-            Transfers
-          </NavLink>
-        </motion.nav>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-auto p-4 border-t border-primary-500/10"
-        >
-          <NavLink
-            to="/profile"
-            end
-            className="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 text-gray-400 hover:bg-gray-50/50 hover:text-gray-100"
-          >
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3 }}
-              className="mr-3"
-            >
-              👤
-            </motion.span>
-            Profile
-          </NavLink>
-        </motion.div>
-      </AnimatePresence>
-    </motion.aside>
+              <Icon className="h-4 w-4" />
+              <span>{item.label}</span>
+            </NavLink>
+          );
+        })}
+      </nav>
+
+      <div className="mt-auto rounded-3xl border border-slate-800 bg-slate-900 p-4 text-sm text-slate-400">
+        Local demo mode is enabled, so your data stays on this machine.
+      </div>
+    </aside>
   );
 };
+
 Sidebar.displayName = 'Sidebar';

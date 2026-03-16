@@ -1,235 +1,230 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Card } from '../components/Card';
+import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '../components/Button';
+import { Card } from '../components/Card';
 import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
-import { useAuthStore } from '../store/useAuthStore';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
-import api from '../utils/api';
+import type { Account } from '../types/app';
+import api, { getApiErrorMessage } from '../utils/api';
+import { formatCurrency } from '../utils/formatters';
 
 export const Accounts = () => {
-   const [accounts, setAccounts] = useState<Array<{
-     id: string;
-     name: string;
-     type: 'checking' | 'savings' | 'credit';
-     balance: number;
-     status: string;
-   }>>([]);
-  const [loading, setLoading] = useState(false);
-   const [error, setError] = useState<string | null>(null);
-   const [showCreateModal, setShowCreateModal] = useState(false);
-   const [createAccountData, setCreateAccountData] = useState({
-     name: '',
-     type: 'checking' as 'checking' | 'savings' | 'credit',
-     initialDeposit: ''
-   });
-    const { user } = useAuthStore(); // Keeping user for potential future use
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createAccountData, setCreateAccountData] = useState({
+    name: '',
+    type: 'checking' as Account['type'],
+    initialDeposit: '',
+  });
 
-    const fetchAccounts = useCallback(async () => {
-       setLoading(true);
-       try {
-         // TODO: Replace with actual API call
-         const response = await api.get(`/accounts?userId=${user?.id}`);
-         setAccounts(response.data);
-         
-         // Mock data for now (remove when API is implemented)
-         /* setAccounts([
-           {
-             id: 'acc1',
-             name: 'Checking Account',
-             type: 'checking',
-             balance: 2500.00,
-             status: 'ACTIVE'
-           },
-           {
-             id: 'acc2',
-             name: 'Savings Account',
-             type: 'savings',
-             balance: 15000.00,
-             status: 'ACTIVE'
-           },
-           {
-             id: 'acc3',
-             name: 'Credit Card',
-             type: 'credit',
-             balance: -500.00, // Negative balance for credit
-             status: 'ACTIVE'
-           },
-           {
-             id: 'acc4',
-             name: 'Frozen Account',
-             type: 'checking',
-             balance: 100.00,
-             status: 'FROZEN'
-           }
-         ]); */
-         toast.success('Accounts loaded successfully!');
-       } catch (err) {
-         const message = err instanceof Error ? err.message : 'Failed to fetch accounts';
-         toast.error(message);
-         setError(message);
-       } finally {
-         setLoading(false);
-       }
-     }, [user]);
-   
-     useEffect(() => {
-       fetchAccounts();
-     }, [fetchAccounts]);
-
-  const handleCreateAccount = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const fetchAccounts = useCallback(async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.post('/accounts', {
-      //   ...createAccountData,
-      //   userId: user?.id,
-      //   initialDeposit: parseFloat(createAccountData.initialDeposit)
-      // });
-      
-      // Mock response
-      const newAccount = {
-        id: `acc${Date.now()}`,
+      const response = await api.get<Account[]>('/accounts');
+      setAccounts(response.data);
+    } catch (error) {
+      const message = getApiErrorMessage(error, 'Failed to fetch accounts.');
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchAccounts();
+  }, [fetchAccounts]);
+
+  const filteredAccounts = useMemo(() => {
+    const normalizedQuery = search.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return accounts;
+    }
+
+    return accounts.filter(
+      (account) =>
+        account.name.toLowerCase().includes(normalizedQuery) ||
+        account.type.toLowerCase().includes(normalizedQuery),
+    );
+  }, [accounts, search]);
+
+  const handleCreateAccount = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+
+    try {
+      await api.post('/accounts', {
         name: createAccountData.name,
         type: createAccountData.type,
-        balance: parseFloat(createAccountData.initialDeposit) || 0,
-        status: 'ACTIVE'
-      };
-      
-       setAccounts(prev => [...prev, newAccount]);
+        initialDeposit: Number(createAccountData.initialDeposit || 0),
+      });
+
+      toast.success('Account created successfully.');
       setShowCreateModal(false);
       setCreateAccountData({
         name: '',
         type: 'checking',
-        initialDeposit: ''
+        initialDeposit: '',
       });
-      toast.success('Account created successfully!');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to create account';
-      toast.error(message);
+      await fetchAccounts();
+    } catch (error) {
+      const message = getApiErrorMessage(error, 'Unable to create the account.');
       setError(message);
+      toast.error(message);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  if (loading && accounts.length === 0) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="animate-spin rounded-full border-4 border-primary-500 border-t-transparent h-12 w-12"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-primary-400">My Accounts</h2>
-         <div className="flex items-center gap-3">
-           <Input
-             placeholder="Search accounts..."
-             className="w-64"
-           />
-           <Button 
-             variant="outline"
-             onClick={() => setShowCreateModal(true)}
-             className="flex items-center gap-2"
-           >
-             <Plus className="h-4 w-4" />
-             New Account
-           </Button>
-         </div>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+            Account center
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold text-slate-50">
+            Manage your accounts
+          </h2>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Input
+            placeholder="Search accounts"
+            value={search}
+            onChange={setSearch}
+            className="sm:w-72"
+          />
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="h-4 w-4" />
+            New account
+          </Button>
+        </div>
       </div>
-      
-      {error && (
-        <div className="bg-red-50/20 border border-red-500/20 text-red-500 px-4 py-3 rounded-md">
+
+      {error ? (
+        <p className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {error}
-        </div>
-      )}
-      
-      {accounts.length > 0 ? (
-        <div className="space-y-4">
-          {accounts.map(account => (
-            <Card key={account.id} className="hover:shadow-xl transition-shadow cursor-pointer">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-primary-400">{account.name}</h3>
-                  <p className="text-sm text-gray-400">{account.type} account</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-primary-50">${account.balance.toFixed(2)}</p>
-                  <span className={`px-2 py-1 text-xs rounded-full 
-                    ${account.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 
-                      account.status === 'FROZEN' ? 'bg-yellow-500/20 text-yellow-400' : 
-                      'bg-red-500/20 text-red-400'
-                    }`}>
-                    {account.status}
-                  </span>
-                </div>
+        </p>
+      ) : null}
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        {filteredAccounts.map((account) => (
+          <Card key={account.id} loading={loading && accounts.length === 0}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-semibold text-slate-50">{account.name}</p>
+                <p className="text-sm capitalize text-slate-400">
+                  {account.type} account
+                </p>
               </div>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500">You don't have any accounts yet.</p>
-        </div>
-      )}
-      
-      <Modal 
-        show={showCreateModal} 
+              <div className="text-left sm:text-right">
+                <p className="text-2xl font-semibold text-slate-50">
+                  {formatCurrency(account.balance, account.currency)}
+                </p>
+                <span className="inline-flex rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-200">
+                  {account.status}
+                </span>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {!loading && filteredAccounts.length === 0 ? (
+        <Card>
+          <p className="text-sm text-slate-400">
+            No accounts match your search yet.
+          </p>
+        </Card>
+      ) : null}
+
+      <Modal
+        show={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        className="max-w-md"
+        className="max-w-lg"
       >
         <div className="space-y-6">
-          <h3 className="text-xl font-bold text-primary-400">Create New Account</h3>
+          <div>
+            <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+              New account
+            </p>
+            <h3 className="mt-2 text-2xl font-semibold text-slate-50">
+              Create an account
+            </h3>
+          </div>
+
           <form onSubmit={handleCreateAccount} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Account Name</label>
-                 <Input 
-                   placeholder="e.g., My Checking Account"
-                   value={createAccountData.name}
-                   onChange={(value) => setCreateAccountData(prev => ({ ...prev, name: value }))}
-                   className="w-full"
-                 />
+            <Input
+              label="Account name"
+              placeholder="Family checking"
+              value={createAccountData.name}
+              onChange={(value) =>
+                setCreateAccountData((previous) => ({
+                  ...previous,
+                  name: value,
+                }))
+              }
+              required
+            />
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">
+                Account type
+              </label>
+              <select
+                value={createAccountData.type}
+                onChange={(event) =>
+                  setCreateAccountData((previous) => ({
+                    ...previous,
+                    type: event.target.value as Account['type'],
+                  }))
+                }
+                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20"
+              >
+                <option value="checking">Checking</option>
+                <option value="savings">Savings</option>
+                <option value="credit">Credit</option>
+              </select>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Account Type</label>
-                <select
-                  value={createAccountData.type}
-                  onChange={(e) => setCreateAccountData(prev => ({ ...prev, type: e.target.value as 'checking' | 'savings' | 'credit' }))}
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="checking">Checking</option>
-                  <option value="savings">Savings</option>
-                  <option value="credit">Credit Card</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Initial Deposit ($)</label>
-                 <Input 
-                   type="number"
-                   value={createAccountData.initialDeposit}
-                   onChange={(value) => setCreateAccountData(prev => ({ ...prev, initialDeposit: value }))}
-                   placeholder="0.00"
-                   className="w-full"
-                 />
-              </div>
+
+            <Input
+              label="Initial deposit"
+              type="number"
+              min="0"
+              step="0.01"
+              value={createAccountData.initialDeposit}
+              onChange={(value) =>
+                setCreateAccountData((previous) => ({
+                  ...previous,
+                  initialDeposit: value,
+                }))
+              }
+              placeholder="0.00"
+            />
+
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="ghost"
+                onClick={() => setShowCreateModal(false)}
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" loading={submitting}>
+                Create account
+              </Button>
             </div>
-             <Button 
-               variant="primary" 
-               className="w-full"
-               disabled={loading}
-             >
-              {loading ? 'Creating account...' : 'Create Account'}
-            </Button>
           </form>
         </div>
       </Modal>
     </div>
   );
 };
-
