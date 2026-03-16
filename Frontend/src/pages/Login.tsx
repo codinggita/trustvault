@@ -7,6 +7,7 @@ import { Card } from '../components/Card';
 import { Toaster } from '../components/ui/Toaster';
 import { toast } from 'sonner';
 import { LogIn } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -31,67 +32,154 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-6">
-          <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center">
-            <LogIn className="h-6 w-6 text-primary-400" />
-          </div>
-          <h2 className="ml-4 text-2xl font-bold text-primary-400">Welcome Back</h2>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-400">
-              Email Address
-            </label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-400">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          
-          <Button 
-            type="submit" 
-            variant="primary" 
-            className="w-full"
-            disabled={loading}
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen bg-gradient-to-br from-background-900 to-background-800 flex items-center justify-center p-4"
+    >
+      <AnimatePresence>
+        <motion.card 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="w-full max-w-md bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
+        >
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex items-center justify-center mb-6"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </Button>
-        </form>
-        
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-400">
-            Don't have an account?{' '}
-            <a 
-              href="/register"
-              className="text-primary-400 hover:text-primary-300 transition-colors"
+            <motion.div 
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="w-12 h-12 bg-gradient-to-tr from-primary-500 to-primary-400/20 rounded-xl flex items-center justify-center"
             >
-              Sign Up
-            </a>
-          </p>
-        </div>
-      </Card>
+              <LogIn className="h-6 w-6 text-primary-400" />
+            </motion.div>
+            <motion.h2 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="ml-4 text-2xl font-bold text-gradient-to-tr from-primary-400 to-primary-300 bg-clip-text text-transparent"
+            >
+              Welcome Back
+            </motion.h2>
+          </motion.div>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.6, delay: 1.0 }}
+              className="space-y-2"
+            >
+              <motion.label 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.4 }}
+                htmlFor="email"
+                className="text-sm font-medium text-gray-400"
+              >
+                Email Address
+              </motion.label>
+              <motion.input 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.4 }}
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 bg-background-700/50 border border-primary-500/30 rounded-lg focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30 text-gray-200 placeholder-gray-500 transition-all duration-300"
+              />
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+              className="space-y-2"
+            >
+              <motion.label 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.4 }}
+                htmlFor="password"
+                className="text-sm font-medium text-gray-400"
+              >
+                Password
+              </motion.label>
+              <motion.input 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.4 }}
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-background-700/50 border border-primary-500/30 rounded-lg focus:border-primary-400 focus:ring-2 focus:ring-primary-500/30 text-gray-200 placeholder-gray-500 transition-all duration-300"
+              />
+            </motion.div>
+            
+            <motion.button 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.6, delay: 1.4 }}
+              type="submit"
+              className="w-full px-4 py-3 bg-gradient-to-tr from-primary-500 to-primary-400 text-white font-medium rounded-lg hover:from-primary-400 hover:to-primary-500 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </motion.button>
+          </form>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.6, delay: 1.6 }}
+            className="text-center mt-6"
+          >
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-sm text-gray-400"
+            >
+              Don't have an account?{' '}
+              <motion.a 
+                href="/register"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-primary-400 hover:text-primary-300 transition-colors"
+              >
+                Sign Up
+              </motion.a>
+            </motion.p>
+          </motion.div>
+        </motion.card>
+      </AnimatePresence>
       <Toaster />
-    </div>
+    </motion.div>
   );
 };

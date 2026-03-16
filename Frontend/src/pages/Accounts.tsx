@@ -22,54 +22,54 @@ export const Accounts = () => {
   useEffect(() => {
     fetchAccounts();
   }, []);
-
-   const fetchAccounts = async () {
-     setLoading(true);
-     try {
-       // TODO: Replace with actual API call
-       // const response = await api.get(`/accounts?userId=${user?.id}`);
-       // setAccounts(response.data);
-       
-       // Mock data for now (remove when API is implemented)
-       setAccounts([
-         {
-           id: 'acc1',
-           name: 'Checking Account',
-           type: 'checking',
-           balance: 2500.00,
-           status: 'ACTIVE'
-         },
-         {
-           id: 'acc2',
-           name: 'Savings Account',
-           type: 'savings',
-           balance: 15000.00,
-           status: 'ACTIVE'
-         },
-         {
-           id: 'acc3',
-           name: 'Credit Card',
-           type: 'credit',
-           balance: -500.00, // Negative balance for credit
-           status: 'ACTIVE'
-         },
-         {
-           id: 'acc4',
-           name: 'Frozen Account',
-           type: 'checking',
-           balance: 100.00,
-           status: 'FROZEN'
-         }
-       ]);
-       toast.success('Accounts loaded successfully!');
-     } catch (err) {
-       const message = err instanceof Error ? err.message : 'Failed to fetch accounts';
-       toast.error(message);
-       setError(message);
-     } finally {
-       setLoading(false);
-     }
-   };
+  
+  const fetchAccounts = async () => {
+      setLoading(true);
+      try {
+        // TODO: Replace with actual API call
+        const response = await api.get(`/accounts?userId=${user?.id}`);
+        setAccounts(response.data);
+        
+        // Mock data for now (remove when API is implemented)
+        /* setAccounts([
+          {
+            id: 'acc1',
+            name: 'Checking Account',
+            type: 'checking',
+            balance: 2500.00,
+            status: 'ACTIVE'
+          },
+          {
+            id: 'acc2',
+            name: 'Savings Account',
+            type: 'savings',
+            balance: 15000.00,
+            status: 'ACTIVE'
+          },
+          {
+            id: 'acc3',
+            name: 'Credit Card',
+            type: 'credit',
+            balance: -500.00, // Negative balance for credit
+            status: 'ACTIVE'
+          },
+          {
+            id: 'acc4',
+            name: 'Frozen Account',
+            type: 'checking',
+            balance: 100.00,
+            status: 'FROZEN'
+          }
+        ]); */
+        toast.success('Accounts loaded successfully!');
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to fetch accounts';
+        toast.error(message);
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
