@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
-import { Card } from '../components/Card';
 import { Toaster } from '../components/ui/Toaster';
 import { toast } from 'sonner';
 import { UserPlus } from 'lucide-react';
@@ -25,8 +22,9 @@ export const Register = () => {
       await register(email, password, name);
       toast.success('Registration successful!');
       navigate('/dashboard');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+    } catch (err) {
+      const message = err.response?.data?.message || 'Registration failed. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -41,13 +39,13 @@ export const Register = () => {
       className="min-h-screen bg-gradient-to-br from-background-900 to-background-800 flex items-center justify-center p-4"
     >
       <AnimatePresence>
-        <motion.card 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full max-w-md bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
-        >
+         <motion.div 
+           initial={{ opacity: 0, scale: 0.9 }}
+           animate={{ opacity: 1, scale: 1 }}
+           exit={{ opacity: 0, scale: 0.9 }}
+           transition={{ duration: 0.6, delay: 0.2 }}
+           className="w-full max-w-md bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
+         >
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

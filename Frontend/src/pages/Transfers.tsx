@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
 import { useAuthStore } from '../store/useAuthStore';
-import { api } from '../utils/api';
 import { toast } from 'sonner';
-import { Banknote, RefreshCw, SendHorizontal } from 'lucide-react';
 
 export const Transfers = () => {
   const [accounts, setAccounts] = useState([]);
@@ -19,7 +16,7 @@ export const Transfers = () => {
     amount: '',
     description: ''
   });
-  const { user } = useAuthStore();
+  const { user } = useAuthStore(); // Keeping user for potential future use when API is implemented
 
   useEffect(() => {
     fetchAccounts();
