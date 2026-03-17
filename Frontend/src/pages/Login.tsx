@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
-import { Card } from '../components/Card';
 import { Toaster } from '../components/ui/Toaster';
 import { toast } from 'sonner';
 import { LogIn } from 'lucide-react';
@@ -20,33 +17,34 @@ export const Login = () => {
     e.preventDefault();
     setLoading(true);
     
-    try {
-      await login(email, password);
-      toast.success('Login successful!');
-      navigate('/dashboard');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Login failed. Please check your credentials.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+     try {
+       await login(email, password);
+       toast.success('Login successful!');
+       navigate('/dashboard');
+     } catch (err) {
+     try {
+       await login(email, password);
+       toast.success('Login successful!');
+       navigate('/dashboard');
+     } catch (err) {
+       const message = (err && typeof err === 'object' && 'response' in err && err.response?.data?.message) ? err.response.data.message : 'Login failed. Please check your credentials.';
+       toast.error(message);
+     } finally {
+       setLoading(false);
+     }
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6 }}
       className="min-h-screen bg-gradient-to-br from-background-900 to-background-800 flex items-center justify-center p-4"
     >
       <AnimatePresence>
-        <motion.card 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full max-w-md bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
-        >
+         <motion.div 
+           initial={{ opacity: 0, scale: 0.9 }}
+           animate={{ opacity: 1, scale: 1 }}
+           exit={{ opacity: 0, scale: 0.9 }}
+           transition={{ duration: 0.6, delay: 0.2 }}
+           className="w-full max-w-md bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
+         >
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -176,8 +174,8 @@ export const Login = () => {
                 Sign Up
               </motion.a>
             </motion.p>
-          </motion.div>
-        </motion.card>
+           </motion.div>
+         </motion.div>
       </AnimatePresence>
       <Toaster />
     </motion.div>

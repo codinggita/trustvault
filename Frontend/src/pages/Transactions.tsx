@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
-import { useAuthStore } from '../store/useAuthStore';
 import { toast } from 'sonner';
 import { Clock, Banknote, RefreshCw } from 'lucide-react';
 
 export const Transactions = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Array<{
+    id: string;
+    type: string;
+    amount: number;
+    description: string;
+    date: string;
+    status: string;
+  }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuthStore();
+  // Keeping user for potential future use when API is implemented
 
   useEffect(() => {
     fetchTransactions();
@@ -50,12 +56,13 @@ export const Transactions = () => {
         }
       ]);
       toast.success('Transactions loaded successfully!');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to fetch transactions');
-      setError(err.response?.data?.message || 'Failed to fetch transactions');
-    } finally {
-      setLoading(false);
-    }
+     } catch (err: any) {
+       const message = err.response?.data?.message || 'Failed to fetch transactions';
+       toast.error(message);
+       setError(message);
+     } finally {
+       setLoading(false);
+     }
   };
 
   const handleRefresh = async () => {
