@@ -1,168 +1,176 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeftRight, Landmark, ReceiptText } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import type { Account, Transaction } from '../types/app';
+import api, { getApiErrorMessage } from '../utils/api';
+import { formatCurrency, formatDate } from '../utils/formatters';
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadDashboard = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [accountsResponse, transactionsResponse] = await Promise.all([
+        api.get<Account[]>('/accounts'),
+        api.get<Transaction[]>('/transactions'),
+      ]);
+
+      setAccounts(accountsResponse.data);
+      setTransactions(transactionsResponse.data.slice(0, 5));
+    } catch (error) {
+      const message = getApiErrorMessage(
+        error,
+        'Unable to load the dashboard right now.',
+      );
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadDashboard();
+  }, [loadDashboard]);
+
+  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.6 }}
-      className="min-h-screen bg-gradient-to-br from-background-900 to-background-800 p-6"
-    >
-      <AnimatePresence>
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="space-y-6"
+    <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[1.4fr,1fr]">
+        <Card
+          loading={loading}
+          header={
+            <div>
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+                Portfolio
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold text-slate-50">
+                {formatCurrency(totalBalance)}
+              </h2>
+            </div>
+          }
         >
-           <motion.div 
-             initial={{ opacity: 0, x: -20 }}
-             animate={{ opacity: 1, x: 0 }}
-             exit={{ opacity: 0, x: -20 }}
-             transition={{ duration: 0.6, delay: 0.4 }}
-             className="flex flex-col sm:flex-row sm:space-x-6"
-           >
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.9 }}
-               transition={{ duration: 0.6, delay: 0.6 }}
-               className="flex-1 p-6 bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
-             >
-             <motion.h3 
-                 initial={{ opacity: 0, y: -10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: -10 }}
-                 transition={{ duration: 0.4 }}
-                 className="text-lg font-semibold text-primary-400 mb-4"
-               >
-                 Total Balance
-               </motion.h3>
-               <motion.p 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 10 }}
-                 transition={{ duration: 0.4, delay: 0.2 }}
-                 className="text-4xl font-bold text-gradient-to-tr from-primary-50 to-primary-400 bg-clip-text text-transparent"
-               >
-                 $0.00
-               </motion.p>
-           </motion.div>
-            
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.9 }}
-               transition={{ duration: 0.6, delay: 0.8 }}
-               className="flex-1 p-6 bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl"
-             >
-               <motion.h3 
-                 initial={{ opacity: 0, y: -10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: -10 }}
-                 transition={{ duration: 0.4 }}
-                 className="text-lg font-semibold text-primary-400 mb-4"
-               >
-                 Recent Transactions
-               </motion.h3>
-               <motion.div 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 10 }}
-                 transition={{ duration: 0.4, delay: 0.2 }}
-                 className="space-y-3"
-               >
-                 <motion.div 
-                   initial={{ opacity: 0, x: -10 }}
-                   animate={{ opacity: 1, x: 0 }}
-                   exit={{ opacity: 0, x: -10 }}
-                   transition={{ duration: 0.4 }}
-                   className="text-sm text-gray-400"
-                 >
-                   No transactions yet
-                 </motion.div>
-               </motion.div>
-           </motion.div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.6, delay: 1.0 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-           <motion.div 
-             initial={{ opacity: 0, scale: 0.9 }}
-             animate={{ opacity: 1, scale: 1 }}
-             exit={{ opacity: 0, scale: 0.9 }}
-             transition={{ duration: 0.6, delay: 1.2 }}
-             className="p-6 bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300"
-           >
-               <motion.div 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 10 }}
-                 transition={{ duration: 0.4, delay: 0.2 }}
-               >
-                 <Button 
-                   variant="outline"
-                   className="w-full px-4 py-3 border-border-primary-500/30 rounded-lg hover:border-primary-400 hover:bg-primary-500/10 transition-all duration-300"
-                 >
-                   View Accounts
-                 </Button>
-               </motion.div>
-           </motion.div>
-            
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.9 }}
-               transition={{ duration: 0.6, delay: 1.4 }}
-               className="p-6 bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300"
-             >
-               <motion.div 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 10 }}
-                 transition={{ duration: 0.4, delay: 0.2 }}
-               >
-                 <Button 
-                   variant="outline"
-                   className="w-full px-4 py-3 border-border-primary-500/30 rounded-lg hover:border-primary-400 hover:bg-primary-500/10 transition-all duration-300"
-                 >
-                   Add Account
-                 </Button>
-               </motion.div>
-           </motion.div>
-            
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.9 }}
-               transition={{ duration: 0.6, delay: 1.6 }}
-               className="p-6 bg-background-800/50 backdrop-blur-lg border border-primary-500/20 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300"
-             >
-               <motion.div 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 10 }}
-                 transition={{ duration: 0.4, delay: 0.2 }}
-               >
-                 <Button 
-                   variant="outline"
-                   className="w-full px-4 py-3 border-border-primary-500/30 rounded-lg hover:border-primary-400 hover:bg-primary-500/10 transition-all duration-300"
-                 >
-                   Make Transfer
-                 </Button>
-               </motion.div>
-           </motion.div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    </motion.div>
+          <p className="text-sm text-slate-400">
+            {accounts.length} active account{accounts.length === 1 ? '' : 's'} connected.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Button variant="outline" onClick={() => navigate('/accounts')}>
+              <Landmark className="h-4 w-4" />
+              Accounts
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/transactions')}>
+              <ReceiptText className="h-4 w-4" />
+              Activity
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/transfers')}>
+              <ArrowLeftRight className="h-4 w-4" />
+              Transfer
+            </Button>
+          </div>
+        </Card>
+
+        <Card
+          loading={loading}
+          header={
+            <div>
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+                Accounts
+              </p>
+              <h3 className="mt-2 text-xl font-semibold text-slate-50">
+                Snapshot
+              </h3>
+            </div>
+          }
+        >
+          {accounts.length === 0 && !loading ? (
+            <p className="text-sm text-slate-400">Create an account to get started.</p>
+          ) : (
+            accounts.slice(0, 3).map((account) => (
+              <div
+                key={account.id}
+                className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3"
+              >
+                <div>
+                  <p className="font-medium text-slate-100">{account.name}</p>
+                  <p className="text-sm capitalize text-slate-400">{account.type}</p>
+                </div>
+                <p className="font-semibold text-slate-50">
+                  {formatCurrency(account.balance, account.currency)}
+                </p>
+              </div>
+            ))
+          )}
+        </Card>
+      </div>
+
+      <Card
+        loading={loading}
+        header={
+          <div>
+            <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+              Latest activity
+            </p>
+            <h3 className="mt-2 text-xl font-semibold text-slate-50">
+              Recent transactions
+            </h3>
+          </div>
+        }
+      >
+        {error ? (
+          <p className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {error}
+          </p>
+        ) : null}
+
+        {!loading && transactions.length === 0 ? (
+          <p className="text-sm text-slate-400">No transactions recorded yet.</p>
+        ) : (
+          transactions.map((transaction) => (
+            <div
+              key={transaction.id}
+              className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="font-medium text-slate-100">
+                  {transaction.description}
+                </p>
+                <p className="text-sm text-slate-400">
+                  {transaction.accountName}
+                  {transaction.relatedAccountName
+                    ? ` • ${transaction.relatedAccountName}`
+                    : ''}
+                </p>
+              </div>
+              <div className="text-left sm:text-right">
+                <p
+                  className={`font-semibold ${
+                    transaction.type === 'credit'
+                      ? 'text-emerald-300'
+                      : 'text-amber-200'
+                  }`}
+                >
+                  {transaction.type === 'credit' ? '+' : '-'}
+                  {formatCurrency(transaction.amount)}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {formatDate(transaction.createdAt)}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+      </Card>
+    </div>
   );
 };

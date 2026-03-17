@@ -1,141 +1,121 @@
-import { useState, useEffect } from 'react';
-import { Card } from '../components/Card';
-import { Button } from '../components/Button';
+import { ArrowDownLeft, ArrowUpRight, RefreshCw } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Clock, Banknote, RefreshCw } from 'lucide-react';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import type { Transaction } from '../types/app';
+import api, { getApiErrorMessage } from '../utils/api';
+import { formatCurrency, formatDate } from '../utils/formatters';
 
 export const Transactions = () => {
-  const [transactions, setTransactions] = useState<Array<{
-    id: string;
-    type: string;
-    amount: number;
-    description: string;
-    date: string;
-    status: string;
-  }>>([]);
-  const [loading, setLoading] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // Keeping user for potential future use when API is implemented
 
-  useEffect(() => {
-    fetchTransactions();
+  const fetchTransactions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.get<Transaction[]>('/transactions');
+      setTransactions(response.data);
+    } catch (error) {
+      const message = getApiErrorMessage(
+        error,
+        'Failed to fetch transactions.',
+      );
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const fetchTransactions = async () => {
-    setLoading(true);
-    try {
-      // TODO: Replace with actual API call
-      // const response = await api.get(`/transactions?userId=${user?.id}`);
-      // setTransactions(response.data);
-      
-      // Mock data for now
-      setTransactions([
-        {
-          id: 'txn1',
-          type: 'debit',
-          amount: 50.00,
-          description: 'Grocery Store',
-          date: '2026-03-15',
-          status: 'completed'
-        },
-        {
-          id: 'txn2',
-          type: 'credit',
-          amount: 1500.00,
-          description: 'Salary Deposit',
-          date: '2026-03-01',
-          status: 'completed'
-        },
-        {
-          id: 'txn3',
-          type: 'debit',
-          amount: 30.00,
-          description: 'Coffee Shop',
-          date: '2026-03-14',
-          status: 'pending'
-        }
-      ]);
-      toast.success('Transactions loaded successfully!');
-     } catch (err: any) {
-       const message = err.response?.data?.message || 'Failed to fetch transactions';
-       toast.error(message);
-       setError(message);
-     } finally {
-       setLoading(false);
-     }
-  };
-
-  const handleRefresh = async () => {
-    await fetchTransactions();
-  };
-
-  if (loading && transactions.length === 0) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="animate-spin rounded-full border-4 border-primary-500 border-t-transparent h-12 w-12"></div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    void fetchTransactions();
+  }, [fetchTransactions]);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-primary-400">Transaction History</h2>
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            onClick={handleRefresh}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
-          </Button>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
+            Activity log
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold text-slate-50">
+            Transaction history
+          </h2>
         </div>
+        <Button variant="outline" onClick={() => void fetchTransactions()}>
+          <RefreshCw className="h-4 w-4" />
+          Refresh
+        </Button>
       </div>
-      
-      {error && (
-        <div className="bg-red-50/20 border border-red-500/20 text-red-500 px-4 py-3 rounded-md">
+
+      {error ? (
+        <p className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {error}
-        </div>
-      )}
-      
-      {transactions.length > 0 ? (
-        <div className="space-y-4">
-          {transactions.map(txn => (
-            <Card key={txn.id} className="hover:shadow-xl transition-shadow cursor-pointer">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full 
-                    ${txn.type === 'credit' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                    }`}>
-                    {txn.type === 'credit' ? <Banknote className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary-400">{txn.description}</h3>
-                    <p className="text-sm text-gray-400">{txn.date}</p>
-                  </div>
+        </p>
+      ) : null}
+
+      <div className="space-y-4">
+        {transactions.map((transaction) => (
+          <Card key={transaction.id} loading={loading && transactions.length === 0}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-4">
+                <div
+                  className={`mt-1 flex h-11 w-11 items-center justify-center rounded-2xl ${
+                    transaction.type === 'credit'
+                      ? 'bg-emerald-500/15 text-emerald-300'
+                      : 'bg-amber-500/15 text-amber-200'
+                  }`}
+                >
+                  {transaction.type === 'credit' ? (
+                    <ArrowDownLeft className="h-5 w-5" />
+                  ) : (
+                    <ArrowUpRight className="h-5 w-5" />
+                  )}
                 </div>
-                <div className="text-right">
-                  <p className={`text-xl font-bold 
-                    ${txn.type === 'credit' ? 'text-green-500' : 'text-red-500'
-                    }`}>
-                    {txn.type === 'credit' ? '+' : '-'}${txn.amount.toFixed(2)}
+                <div>
+                  <p className="font-semibold text-slate-50">
+                    {transaction.description}
                   </p>
-                  <span className={`px-2 py-1 text-xs rounded-full 
-                    ${txn.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                    }`}>
-                    {txn.status}
-                  </span>
+                  <p className="text-sm text-slate-400">
+                    {transaction.accountName}
+                    {transaction.relatedAccountName
+                      ? ` • ${transaction.relatedAccountName}`
+                      : ''}
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
+                    {transaction.status}
+                  </p>
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No transactions yet.</p>
-        </div>
-      )}
+              <div className="text-left sm:text-right">
+                <p
+                  className={`text-xl font-semibold ${
+                    transaction.type === 'credit'
+                      ? 'text-emerald-300'
+                      : 'text-amber-200'
+                  }`}
+                >
+                  {transaction.type === 'credit' ? '+' : '-'}
+                  {formatCurrency(transaction.amount)}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {formatDate(transaction.createdAt)}
+                </p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {!loading && transactions.length === 0 ? (
+        <Card>
+          <p className="text-sm text-slate-400">No transactions found yet.</p>
+        </Card>
+      ) : null}
     </div>
   );
 };

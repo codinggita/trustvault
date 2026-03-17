@@ -1,32 +1,21 @@
-import { Sidebar } from '../Sidebar';
-import { Navbar } from '../Navbar';
 import { Outlet } from 'react-router-dom';
-import { useUiStore } from '../../store/useUiStore';
-import { Spinner } from '../../components/Spinner';
+import { Navbar } from '../Navbar';
+import { Sidebar } from '../Sidebar';
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-}
-
-export const MainLayout = ({ children }: MainLayoutProps) => {
-  const { isLoading } = useUiStore();
-
+export const MainLayout = () => {
   return (
-    <div className="flex min-h-screen bg-background-900">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Navbar />
-        <main className="flex-1 p-6 overflow-y-auto relative">
-          {children}
-          <Outlet />
-          {isLoading && (
-            <div className="fixed inset-0 bg-background-900/50 backdrop-blur flex items-center justify-center z-50">
-              <Spinner size="lg" className="h-12 w-12" />
-            </div>
-          )}
-        </main>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <div className="mx-auto flex min-h-screen max-w-7xl">
+        <Sidebar />
+        <div className="flex min-h-screen flex-1 flex-col">
+          <Navbar />
+          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );
 };
+
 MainLayout.displayName = 'MainLayout';
